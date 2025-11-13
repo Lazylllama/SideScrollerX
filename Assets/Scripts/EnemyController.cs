@@ -2,18 +2,32 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
     Rigidbody2D rb;
-    [SerializeField] float speed;
 
-    bool lookingRight = true;
-    bool isGrounded;
+    public bool lookingRight = true;
+    public bool isGrounded;
 
+    [Header("Settings")]
     [SerializeField] float checkDistance;
+    [SerializeField] float speed;
+    [SerializeField] float damageAmount;
+
+    [Header("REFS")]
     [SerializeField] Transform lookCheck;
     [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask groundLayer;
+    StatsController statsController;
+    Animator animator;
 
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+        statsController = FindAnyObjectByType<StatsController>();
+        animator = GetComponent<Animator>();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.gameObject.CompareTag("Player")) {
+            statsController.DealDamage(damageAmount, transform.position);
+        }    
     }
 
     void Update() {
@@ -32,6 +46,12 @@ public class EnemyController : MonoBehaviour {
 
     void MoveEnemy() {
         rb.linearVelocityX = transform.right.x * speed;
+
+        if (rb.linearVelocityX == 0) {
+            animator.SetBool("isWalking", false);
+        } else {
+            animator.SetBool("isWalking", true);
+        }
     }
     void OnDrawGizmos() {
         Gizmos.color = Color.green;

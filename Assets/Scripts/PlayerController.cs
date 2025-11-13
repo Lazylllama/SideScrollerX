@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
@@ -9,13 +10,12 @@ public class PlayerController : MonoBehaviour
     InputAction moveAction;
     Vector2 moveInput;
 
-    SpriteRenderer playerSprite;
-
     float jumpTimer;
 
     [Header("Player Stats")]
     [SerializeField] float playerSpeed;
     [SerializeField] float jumpForce;
+    [SerializeField] float knockBackPower;
     public bool isFacingRight;
 
     [Header("Ground Check")]
@@ -24,12 +24,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Transform groundCheckPosition;
     [SerializeField] LayerMask groundLayer;
 
+    [Header("Animation")]
+    SpriteRenderer playerSprite;
+    Animator playerAnimator;
+
     void Start() {
         rb = GetComponent<Rigidbody2D>();
         moveAction = InputSystem.actions.FindAction("Move");
         jumpAction = InputSystem.actions.FindAction("Jump");
 
-        playerSprite = GetComponent<SpriteRenderer>();
+        playerSprite = GetComponentInChildren<SpriteRenderer>();
+        playerAnimator = GetComponentInChildren<Animator>();
 
         isFacingRight = true;
     }
@@ -62,6 +67,12 @@ public class PlayerController : MonoBehaviour
     }
     
     void PerformMove() {
+        if (moveInput.x != 0) {
+            playerAnimator.SetBool("isRunning", true);
+        } else {
+            playerAnimator.SetBool("isRunning", false);
+        }
+
         rb.linearVelocityX = moveInput.x * playerSpeed;
     }
 
@@ -74,13 +85,19 @@ public class PlayerController : MonoBehaviour
         jumpTimer = 0;  
     }
 
+    public void DamageKnockback(Vector3 enemyPosition) {
+        Debug.Log("jävla skräp skit helvetes förbannade skit forces");
+    }
+
     void GroundCheck() {
         Collider2D hit = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
 
         if (hit != null) {
             isGrounded = true;
-        } else {
+            playerAnimator.SetBool("isGrounded", true);
+        } else { 
             isGrounded = false;
+            playerAnimator.SetBool("isGrounded", false);
         }
     }
 

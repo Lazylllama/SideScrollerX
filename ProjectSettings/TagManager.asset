@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Coin
+  - Moon
+  - BlueKey
+  - RedKey
   layers:
   - Default
   - TransparentFX
@@ -41,6 +45,27 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Sky
+    uniqueID: 1700696529
+    locked: 0
+  - name: Moon
+    uniqueID: 2226681439
+    locked: 0
+  - name: Clouds - 3
+    uniqueID: 2668371115
+    locked: 0
+  - name: Clouds - 4
+    uniqueID: 460723909
+    locked: 0
+  - name: Objects
+    uniqueID: 3551685389
+    locked: 0
+  - name: Player
+    uniqueID: 3338931011
+    locked: 0
+  - name: Ground
+    uniqueID: 3088638757
     locked: 0
   m_RenderingLayers:
   - Default
