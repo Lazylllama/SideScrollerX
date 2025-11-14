@@ -1,113 +1,124 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
-{
-    Rigidbody2D rb;
+public class PlayerController : MonoBehaviour {
+	[Header("Refs")]
+	private InputAction jumpAction, moveAction;
+	private Vector2     moveInput;
+	private Rigidbody2D rb;
 
-    InputAction jumpAction;
-    InputAction moveAction;
-    Vector2 moveInput;
 
-    float jumpTimer;
+	[Header("Player Stats"), SerializeField]
+	private float playerSpeed,
+	              jumpForce,
+	              knockBackPower;
+	public bool isFacingRight;
 
-    [Header("Player Stats")]
-    [SerializeField] float playerSpeed;
-    [SerializeField] float jumpForce;
-    [SerializeField] float knockBackPower;
-    public bool isFacingRight;
+	[Header("Ground Check")]
+	[SerializeField] private float groundCheckRadius;
+	[SerializeField] private Transform groundCheckPosition;
+	[SerializeField] private LayerMask groundLayer;
+	private                  bool      isGrounded;
 
-    [Header("Ground Check")]
-    [SerializeField] bool isGrounded;
-    [SerializeField] float groundCheckRadius;
-    [SerializeField] Transform groundCheckPosition;
-    [SerializeField] LayerMask groundLayer;
 
-    [Header("Animation")]
-    SpriteRenderer playerSprite;
-    Animator playerAnimator;
+	[Header("Animation")]
+	private SpriteRenderer playerSprite;
+	private Animator playerAnimator;
 
-    void Start() {
-        rb = GetComponent<Rigidbody2D>();
-        moveAction = InputSystem.actions.FindAction("Move");
-        jumpAction = InputSystem.actions.FindAction("Jump");
+	// Hashes
+	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
+	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
 
-        playerSprite = GetComponentInChildren<SpriteRenderer>();
-        playerAnimator = GetComponentInChildren<Animator>();
+	// Timer
+	private float jumpTimer;
 
-        isFacingRight = true;
-    }
 
-    void Update() {
-        GroundCheck();
-        MoveCheck();
-    }
+	// Begin Functions
+	private void Start() {
+		rb         = GetComponent<Rigidbody2D>();
+		moveAction = InputSystem.actions.FindAction("Move");
+		jumpAction = InputSystem.actions.FindAction("Jump");
 
-    void FixedUpdate() {
-        PerformMove();
-    }
+		playerSprite   = GetComponentInChildren<SpriteRenderer>();
+		playerAnimator = GetComponentInChildren<Animator>();
 
-    void MoveCheck() {
-        jumpTimer += Time.deltaTime;
+		isFacingRight = true;
+	}
 
-        moveInput = moveAction.ReadValue<Vector2>();
+	private void Update() {
+		GroundCheck();
+		MoveCheck();
+	}
 
-        if (moveInput.x < 0) {
-            isFacingRight = false;
-            playerSprite.flipX = true;
-        } else if (moveInput.x > 0) {
-            isFacingRight = true;
-            playerSprite.flipX = false;
-        }
+	private void FixedUpdate() {
+		PerformMove();
+	}
 
-        if (jumpAction.IsPressed()) {
-            PerformJump();
-        }
-    }
-    
-    void PerformMove() {
-        if (moveInput.x != 0) {
-            playerAnimator.SetBool("isRunning", true);
-        } else {
-            playerAnimator.SetBool("isRunning", false);
-        }
+	private void MoveCheck() {
+		jumpTimer += Time.deltaTime;
 
-        rb.linearVelocityX = moveInput.x * playerSpeed;
-    }
+		moveInput = moveAction.ReadValue<Vector2>();
 
-    void PerformJump() {
-        if (!isGrounded) return;
-        if (jumpTimer < 0.1) return; //Avoid double jumps from a single press
+		if (moveInput.x < 0) {
+			isFacingRight      = false;
+			playerSprite.flipX = true;
+		}
+		else if (moveInput.x > 0) {
+			isFacingRight      = true;
+			playerSprite.flipX = false;
+		}
 
-        rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+		if (jumpAction.IsPressed()) {
+			PerformJump();
+		}
+	}
 
-        jumpTimer = 0;  
-    }
+	private void PerformMove() {
+		if (moveInput.x != 0) {
+			playerAnimator.SetBool(IsRunning, true);
+		}
+		else {
+			playerAnimator.SetBool(IsRunning, false);
+		}
 
-    public void DamageKnockback(Vector3 enemyPosition) {
-        Debug.Log("jävla skräp skit helvetes förbannade skit forces");
-    }
+		rb.linearVelocityX = moveInput.x * playerSpeed;
+	}
 
-    void GroundCheck() {
-        Collider2D hit = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
+	private void PerformJump() {
+		if (!isGrounded) return;
+		if (jumpTimer < 0.1) return; //Avoid double jumps from a single press
 
-        if (hit != null) {
-            isGrounded = true;
-            playerAnimator.SetBool("isGrounded", true);
-        } else { 
-            isGrounded = false;
-            playerAnimator.SetBool("isGrounded", false);
-        }
-    }
+		rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-    void OnDrawGizmos() {
-        if (isGrounded) { 
-            Gizmos.color = Color.green;
-        } else {
-            Gizmos.color = Color.yellow;
-        }
+		jumpTimer = 0;
+	}
 
-        Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
-    }
+	public void DamageKnockback(Vector3 enemyPosition) {
+		var knockBackDirection = (enemyPosition - transform.position).normalized;
+		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+	}
+
+	private void GroundCheck() {
+		var hit = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
+
+		if (hit) {
+			isGrounded = true;
+			playerAnimator.SetBool(IsGrounded, true);
+		}
+		else {
+			isGrounded = false;
+			playerAnimator.SetBool(IsGrounded, false);
+		}
+	}
+
+	private void OnDrawGizmos() {
+		if (isGrounded) {
+			Gizmos.color = Color.green;
+		}
+		else {
+			Gizmos.color = Color.yellow;
+		}
+
+		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
+	}
 }

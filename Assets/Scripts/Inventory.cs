@@ -3,29 +3,29 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    // Items
+    [Header("Inventory Stats")]
     public int blueKeys;
     public int redKeys;
     public int coins;
 
     // Ref
-    UIController uiController;
+    private UIController uiController;
 
     private void Start() {
         uiController = FindAnyObjectByType<UIController>();
     }
 
-    void KeyCollect(bool isRed) {
+    private void KeyCollect(bool isRed) {
         if (!isRed) {
             blueKeys++;
-        } else if (isRed) {
+        } else {
             redKeys++;
         }
 
         uiController.UpdateUI();
     }
 
-    void CoinCollect(int amount) {
+    private void CoinCollect(int amount) {
         coins += amount;
         uiController.UpdateUI();
     }

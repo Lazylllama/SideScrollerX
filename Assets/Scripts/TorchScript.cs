@@ -1,44 +1,46 @@
 using UnityEngine;
 
-public class TorchScript : MonoBehaviour
-{
-    [Header("REFS")]
-    [SerializeField] GameObject playerObject;
-    PlayerController playerController;
-    Animator animator;
+public class TorchScript : MonoBehaviour {
+	[Header("REFS")]
+	[SerializeField] private GameObject playerObject;
+	private PlayerController playerController;
+	private Animator         animator;
 
-    [Header("Torch Settings")]
-    [SerializeField] float smoothing;
-    [SerializeField] Vector2 offset;
+	[Header("Torch Settings")]
+	[SerializeField] private float smoothing;
+	[SerializeField] private Vector2 offset;
 
-    void Start()
-    {
-        playerController = FindAnyObjectByType<PlayerController>();
-        animator = GetComponent<Animator>();
-        SetIsLit(true);
-    }
+	// Hashes
+	private static readonly int IsLit = Animator.StringToHash("isLit");
 
-    public void SetIsLit(bool isLit) {
-        animator.SetBool("isLit", true);
-    }
+	private void Start() {
+		playerController = FindAnyObjectByType<PlayerController>();
+		animator         = GetComponent<Animator>();
+		SetIsLit(true);
+	}
 
-    public void UpdatePosition() {
-        Vector3 playerPosWOffset;
+	public void SetIsLit(bool isLit) {
+		animator.SetBool(IsLit, true);
+	}
 
-        if (playerController.isFacingRight) {
-            playerPosWOffset = playerObject.transform.position + new Vector3(offset.x, offset.y, 0);
-        } else {
-            playerPosWOffset = playerObject.transform.position + new Vector3(-offset.x, offset.y, 0);
-        }
+	public void UpdatePosition() {
+		Vector3 playerPosWOffset;
 
-        transform.position = Vector3.Lerp(
-                transform.position,
-                playerPosWOffset,
-                smoothing * Time.deltaTime
-                );
-    }
+		if (playerController.isFacingRight) {
+			playerPosWOffset = playerObject.transform.position + new Vector3(offset.x, offset.y, 0);
+		}
+		else {
+			playerPosWOffset = playerObject.transform.position + new Vector3(-offset.x, offset.y, 0);
+		}
 
-    void FixedUpdate() {
-        UpdatePosition();
-    }
+		transform.position = Vector3.Lerp(
+		                                  transform.position,
+		                                  playerPosWOffset,
+		                                  smoothing * Time.deltaTime
+		                                 );
+	}
+
+	private void FixedUpdate() {
+		UpdatePosition();
+	}
 }

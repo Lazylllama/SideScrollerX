@@ -2,55 +2,56 @@ using System.Collections;
 using System.ComponentModel;
 using UnityEngine;
 
-public class StatsController : MonoBehaviour
-{
-    // Health
-    public float health;
-    public float maxHealth = 3;
+public class StatsController : MonoBehaviour {
+	// Health
+	public float health;
+	public float maxHealth = 3;
 
-    // Ref
-    UIController uiController;
-    TorchScript torchScript;
-    PlayerController playerController;
+	// Ref
+	private UIController     uiController;
+	private TorchScript      torchScript;
+	private PlayerController playerController;
 
-    // Timer
-    float immunityTimer = 0f;
+	// Timer
+	private float immunityTimer = 0f;
 
-    void Start()
-    {
-        health = maxHealth;
-        uiController = FindAnyObjectByType<UIController>();
-        torchScript = FindAnyObjectByType<TorchScript>();
-        playerController = FindAnyObjectByType<PlayerController>();
+	private void Start() {
+		health = maxHealth;
 
-        uiController.UpdateUI();
-    }
+		uiController     = FindAnyObjectByType<UIController>();
+		torchScript      = FindAnyObjectByType<TorchScript>();
+		playerController = FindAnyObjectByType<PlayerController>();
 
-    public void DealDamage(float damageAmount, Vector3 sourcePosition) {
-        // If immune, do nothing
-        if (immunityTimer > 0f) {
-            return;
-        }
+		uiController.UpdateUI();
+	}
 
-        // Deal damage and apply knockback
-        health -= damageAmount;
-        playerController.DamageKnockback(sourcePosition);
+	public void DealDamage(float damageAmount, Vector3 sourcePosition) {
+		// If immune, do nothing
+		if (immunityTimer > 0f) {
+			return;
+		}
 
-        // Update UI
-        uiController.UpdateUI();
-    }
+		// Deal damage and apply knockback
+		health -= damageAmount;
+		playerController.DamageKnockback(sourcePosition);
 
-    public void RegisterKill() {
-        // Register immunity for 1.5 seconds after a kill
-        StartCoroutine(ImmunityFrames(1.5f));
-    }
+		// Update UI
+		uiController.UpdateUI();
+	}
 
-    IEnumerator ImmunityFrames(float immunityDuration) {
-        immunityTimer = 0f;
-        while (immunityTimer < immunityDuration) {
-            immunityTimer += Time.deltaTime;
-            yield return null;
-        }
-        immunityTimer = 0f;
-    }
+	public void RegisterKill() {
+		// Register immunity for 0.2 seconds after a kill
+		StartCoroutine(ImmunityFrames(0.2f));
+	}
+
+	private IEnumerator ImmunityFrames(float immunityDuration) {
+		immunityTimer = 0f;
+
+		while (immunityTimer < immunityDuration) {
+			immunityTimer += Time.deltaTime;
+			yield return null;
+		}
+
+		immunityTimer = 0f;
+	}
 }

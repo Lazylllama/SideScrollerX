@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 public class LockedDoor : MonoBehaviour
 {
     Inventory inventoryScript;

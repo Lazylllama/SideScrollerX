@@ -1,8 +1,9 @@
+using System;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
-    Rigidbody2D rb;
 
+    [Header("States")]
     public bool lookingRight = true;
     public bool isGrounded;
 
@@ -12,13 +13,17 @@ public class EnemyController : MonoBehaviour {
     [SerializeField] float damageAmount;
 
     [Header("REFS")]
-    [SerializeField] Transform lookCheck;
-    [SerializeField] Transform groundCheck;
-    [SerializeField] LayerMask groundLayer;
-    StatsController statsController;
-    Animator animator;
+    [SerializeField] private Transform lookCheck;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    
+    private Rigidbody2D rb;
+    private StatsController statsController;
+    private Animator animator;
+    
+    private static readonly int IsWalking = Animator.StringToHash("isWalking");
 
-    void Start() {
+    private void Start() {
         rb = GetComponent<Rigidbody2D>();
         statsController = FindAnyObjectByType<StatsController>();
         animator = GetComponent<Animator>();
@@ -30,30 +35,30 @@ public class EnemyController : MonoBehaviour {
         }    
     }
 
-    void Update() {
-        RaycastHit2D lookHit = Physics2D.Raycast(lookCheck.position, Vector2.down, checkDistance, groundLayer);
-        RaycastHit2D groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
+    private void Update() {
+        var lookHit = Physics2D.Raycast(lookCheck.position, Vector2.down, checkDistance, groundLayer);
+        var groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
 
-        if (lookHit.collider == null && groundHit.collider != null) {
+        if (lookHit.collider && groundHit.collider) {
             lookingRight = !lookingRight;
             transform.rotation *= Quaternion.Euler(0, 180f, 0);
         }
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
         MoveEnemy();
     }
 
-    void MoveEnemy() {
+    private void MoveEnemy() {
         rb.linearVelocityX = transform.right.x * speed;
 
         if (rb.linearVelocityX == 0) {
-            animator.SetBool("isWalking", false);
+            animator.SetBool(IsWalking, false);
         } else {
-            animator.SetBool("isWalking", true);
+            animator.SetBool(IsWalking, true);
         }
     }
-    void OnDrawGizmos() {
+    private void OnDrawGizmos() {
         Gizmos.color = Color.green;
 
         Gizmos.DrawWireSphere(groundCheck.position, checkDistance);
