@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	private                  bool      isGrounded;
+	private                  bool      inKnockback;
 
 
 	[Header("Animation")]
@@ -94,8 +96,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void DamageKnockback(Vector3 enemyPosition) {
-		var knockBackDirection = (enemyPosition - transform.position).normalized;
-		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+		StartCoroutine(KnockbackRoutine(enemyPosition));
 	}
 
 	private void GroundCheck() {
@@ -120,5 +121,15 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
+	}
+
+	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
+		inKnockback = true;
+		var knockBackDirection = (enemyPosition - transform.position).normalized;
+		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+
+		
+
+		yield return null;
 	}
 }

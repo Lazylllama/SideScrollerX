@@ -39,7 +39,7 @@ public class EnemyController : MonoBehaviour {
         var lookHit = Physics2D.Raycast(lookCheck.position, Vector2.down, checkDistance, groundLayer);
         var groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
 
-        if (lookHit.collider && groundHit.collider) {
+        if (!lookHit.collider && groundHit.collider) {
             lookingRight = !lookingRight;
             transform.rotation *= Quaternion.Euler(0, 180f, 0);
         }
