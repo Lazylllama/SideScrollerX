@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	private                  bool      isGrounded;
-	private                  bool      inKnockback;
+	private                  bool      inKnockback = false;
 
 
 	[Header("Animation")]
@@ -57,10 +57,12 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void MoveCheck() {
-		jumpTimer += Time.deltaTime;
-
 		moveInput = moveAction.ReadValue<Vector2>();
+		
+		if (inKnockback) return;
 
+		jumpTimer += Time.deltaTime;
+		
 		if (moveInput.x < 0) {
 			isFacingRight      = false;
 			playerSprite.flipX = true;
@@ -76,6 +78,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void PerformMove() {
+		if (inKnockback) return;
 		if (moveInput.x != 0) {
 			playerAnimator.SetBool(IsRunning, true);
 		}
@@ -126,9 +129,14 @@ public class PlayerController : MonoBehaviour {
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
 		inKnockback = true;
 		var knockBackDirection = (enemyPosition - transform.position).normalized;
-		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+		Debug.Log("Knockback: " + enemyPosition + " " + transform.position + " " + knockBackDirection);
 
-		
+		//rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+		rb.AddForce(Vector2.right * knockBackPower, ForceMode2D.Impulse);
+
+		yield return new WaitUntil(() => isGrounded);
+
+		inKnockback = false;
 
 		yield return null;
 	}
