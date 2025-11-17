@@ -40,7 +40,7 @@ public class TorchScript : MonoBehaviour {
 		                                 );
 	}
 
-	private void FixedUpdate() {
+	private void LateUpdate() {
 		UpdatePosition();
 	}
 }

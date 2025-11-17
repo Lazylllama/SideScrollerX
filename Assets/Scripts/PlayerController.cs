@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
 	[Header("Player Stats"), SerializeField]
 	private float playerSpeed,
 	              jumpForce,
+	              maxJumpHeight,
 	              knockBackPower;
 	public bool isFacingRight;
 
@@ -30,6 +31,7 @@ public class PlayerController : MonoBehaviour {
 	// Hashes
 	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
 	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
+	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	// Timer
 	private float jumpTimer;
@@ -58,11 +60,11 @@ public class PlayerController : MonoBehaviour {
 
 	private void MoveCheck() {
 		moveInput = moveAction.ReadValue<Vector2>();
-		
+
 		if (inKnockback) return;
 
 		jumpTimer += Time.deltaTime;
-		
+
 		if (moveInput.x < 0) {
 			isFacingRight      = false;
 			playerSprite.flipX = true;
@@ -91,7 +93,8 @@ public class PlayerController : MonoBehaviour {
 
 	private void PerformJump() {
 		if (!isGrounded) return;
-		if (jumpTimer < 0.1) return; //Avoid double jumps from a single press
+		Debug.Log(rb.linearVelocityY);
+		if (jumpTimer < 0.1 && rb.linearVelocityY < maxJumpHeight) return;
 
 		rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
@@ -99,6 +102,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void DamageKnockback(Vector3 enemyPosition) {
+		playerAnimator.SetTrigger(TakeDamage);
 		StartCoroutine(KnockbackRoutine(enemyPosition));
 	}
 
@@ -128,12 +132,11 @@ public class PlayerController : MonoBehaviour {
 
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
 		inKnockback = true;
-		var knockBackDirection = (enemyPosition - transform.position).normalized;
-		Debug.Log("Knockback: " + enemyPosition + " " + transform.position + " " + knockBackDirection);
+		var knockBackDirection = (transform.position - enemyPosition).normalized;
 
-		//rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
-		rb.AddForce(Vector2.right * knockBackPower, ForceMode2D.Impulse);
+		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
 
+		yield return new WaitForSeconds(0.2f);
 		yield return new WaitUntil(() => isGrounded);
 
 		inKnockback = false;
