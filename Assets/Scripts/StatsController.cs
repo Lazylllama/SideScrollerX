@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel;
 using UnityEngine;
 
 public class StatsController : MonoBehaviour {
@@ -11,9 +10,6 @@ public class StatsController : MonoBehaviour {
 	private UIController     uiController;
 	private TorchScript      torchScript;
 	private PlayerController playerController;
-
-	// Timer
-	private float immunityTimer = 0f;
 
 	private void Start() {
 		health = maxHealth;
@@ -27,7 +23,7 @@ public class StatsController : MonoBehaviour {
 
 	public void DealDamage(float damageAmount, Vector3 sourcePosition) {
 		// If immune, do nothing
-		if (immunityTimer > 0f) {
+		if (playerController.isImmortal) {
 			return;
 		}
 
@@ -35,23 +31,20 @@ public class StatsController : MonoBehaviour {
 		health -= damageAmount;
 		playerController.DamageKnockback(sourcePosition);
 
+		if (health <= 0) {
+			torchScript.SetIsLit(false);
+		}
+		else {
+			// Apply immortality
+			playerController.PlayerImmortal(5f);
+		}
+
 		// Update UI
 		uiController.UpdateUI();
 	}
 
 	public void RegisterKill() {
-		// Register immunity for 0.2 seconds after a kill
-		StartCoroutine(ImmunityFrames(0.2f));
-	}
-
-	private IEnumerator ImmunityFrames(float immunityDuration) {
-		immunityTimer = 0f;
-
-		while (immunityTimer < immunityDuration) {
-			immunityTimer += Time.deltaTime;
-			yield return null;
-		}
-
-		immunityTimer = 0f;
+		// Register immunity for 5 seconds after a kill
+		playerController.PlayerImmortal(2f);
 	}
 }

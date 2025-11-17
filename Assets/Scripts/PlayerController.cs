@@ -14,13 +14,14 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float jumpForce;
 	[SerializeField] private float extraJumpForce;
 	[SerializeField] private float knockBackPower;
+	public                   bool  isImmortal;
 
 	[Header("Ground Check")]
 	[SerializeField] private float groundCheckRadius;
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	private                  bool      isGrounded;
-	private                  bool      inKnockback = false;
+	private                  bool      inKnockback;
 
 
 	[Header("Animation")]
@@ -82,13 +83,9 @@ public class PlayerController : MonoBehaviour {
 
 	private void PerformMove() {
 		if (inKnockback) return;
-		if (moveInput.x != 0) {
-			playerAnimator.SetBool(IsRunning, true);
-		}
-		else {
-			playerAnimator.SetBool(IsRunning, false);
-		}
-
+		
+		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
+		
 		rb.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
@@ -106,6 +103,10 @@ public class PlayerController : MonoBehaviour {
 
 			jumpTimer = 0;
 		}
+	}
+
+	public void PlayerImmortal(float duration) {
+		StartCoroutine((ImmortalityRoutine(duration)));
 	}
 
 	public void DamageKnockback(Vector3 enemyPosition) {
@@ -143,5 +144,15 @@ public class PlayerController : MonoBehaviour {
 		inKnockback = false;
 
 		yield return null;
+	}
+	
+	private IEnumerator ImmortalityRoutine(float duration) {
+		isImmortal = true;
+		playerSprite.color = new Color(1f, 1f, 1f, 0.5f);
+		
+		yield return new WaitForSeconds(duration);
+		
+		isImmortal = false;
+		playerSprite.color = Color.white;
 	}
 }
