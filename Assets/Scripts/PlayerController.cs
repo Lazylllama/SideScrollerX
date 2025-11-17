@@ -9,12 +9,11 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody2D rb;
 
 
-	[Header("Player Stats"), SerializeField]
-	private float playerSpeed,
-	              jumpForce,
-	              maxJumpHeight,
-	              knockBackPower;
-	public bool isFacingRight;
+	[Header("Player Stats")]
+	[SerializeField] private float playerSpeed;
+	[SerializeField] private float jumpForce;
+	[SerializeField] private float extraJumpForce;
+	[SerializeField] private float knockBackPower;
 
 	[Header("Ground Check")]
 	[SerializeField] private float groundCheckRadius;
@@ -27,6 +26,7 @@ public class PlayerController : MonoBehaviour {
 	[Header("Animation")]
 	private SpriteRenderer playerSprite;
 	private Animator playerAnimator;
+	public  bool     isFacingRight;
 
 	// Hashes
 	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour {
 
 	// Timer
 	private float jumpTimer;
+	private float jumpingTimer;
 
 
 	// Begin Functions
@@ -58,7 +59,7 @@ public class PlayerController : MonoBehaviour {
 		PerformMove();
 	}
 
-	private void MoveCheck() {
+	void MoveCheck() {
 		moveInput = moveAction.ReadValue<Vector2>();
 
 		if (inKnockback) return;
@@ -75,7 +76,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		if (jumpAction.IsPressed()) {
-			PerformJump();
+			PerformJump(jumpAction.WasPressedThisFrame());
 		}
 	}
 
@@ -91,14 +92,20 @@ public class PlayerController : MonoBehaviour {
 		rb.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
-	private void PerformJump() {
-		if (!isGrounded) return;
-		Debug.Log(rb.linearVelocityY);
-		if (jumpTimer < 0.1 && rb.linearVelocityY < maxJumpHeight) return;
+	private void PerformJump(bool thisFrame) {
+		jumpingTimer += Time.deltaTime;
+		if (jumpTimer < 0.1f) return;
 
-		rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+		if (!isGrounded && !thisFrame && jumpingTimer < 0.6) {
+			rb.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+		}
+		else if (isGrounded) {
+			jumpingTimer = 0;
 
-		jumpTimer = 0;
+			rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+
+			jumpTimer = 0;
+		}
 	}
 
 	public void DamageKnockback(Vector3 enemyPosition) {
@@ -120,13 +127,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void OnDrawGizmos() {
-		if (isGrounded) {
-			Gizmos.color = Color.green;
-		}
-		else {
-			Gizmos.color = Color.yellow;
-		}
-
+		Gizmos.color = isGrounded ? Color.green : Color.yellow;
 		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
 	}
 
