@@ -4,7 +4,6 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour {
 	[Header("States")]
 	public bool lookingRight = true;
-	public bool isGrounded;
 	public bool isDead;
 
 	[Header("Settings")]
@@ -45,8 +44,7 @@ public class EnemyController : MonoBehaviour {
 		if (!lookHit.collider && groundHit.collider && !isDead) {
 			lookingRight       =  !lookingRight;
 			transform.rotation *= Quaternion.Euler(0, 180f, 0);
-		}
-		else if (
+		} else if (
 			(xPos > pointR.transform.position.x && lookingRight) ||
 			xPos < pointL.transform.position.x && !lookingRight) {
 			lookingRight       =  !lookingRight;
@@ -59,14 +57,13 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	private void MoveEnemy() {
+		// Move enemy no matter dead or alive to create better death animation :)
 		rb.linearVelocityX = transform.right.x * speed;
 
 		if (isDead) return;
-
 		if (rb.linearVelocityX == 0) {
 			animator.SetBool(IsWalking, false);
-		}
-		else {
+		} else {
 			animator.SetBool(IsWalking, true);
 		}
 	}
@@ -77,7 +74,6 @@ public class EnemyController : MonoBehaviour {
 
 	private void OnDrawGizmos() {
 		Gizmos.color = Color.green;
-
 		Gizmos.DrawWireSphere(groundCheck.position, checkDistance);
 		Gizmos.DrawWireSphere(lookCheck.position,   checkDistance);
 	}
