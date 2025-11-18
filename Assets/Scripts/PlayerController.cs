@@ -5,8 +5,9 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour {
 	[Header("Refs")]
 	private InputAction jumpAction, moveAction;
-	private Vector2     moveInput;
-	private Rigidbody2D rb;
+	private Vector2       moveInput;
+	private BoxCollider2D playerEnemyCollider;
+	private Rigidbody2D   rb;
 
 
 	[Header("Player Stats")]
@@ -45,8 +46,9 @@ public class PlayerController : MonoBehaviour {
 		moveAction = InputSystem.actions.FindAction("Move");
 		jumpAction = InputSystem.actions.FindAction("Jump");
 
-		playerSprite   = GetComponentInChildren<SpriteRenderer>();
-		playerAnimator = GetComponentInChildren<Animator>();
+		playerSprite        = GetComponentInChildren<SpriteRenderer>();
+		playerAnimator      = GetComponentInChildren<Animator>();
+		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
 
 		isFacingRight = true;
 	}
@@ -83,9 +85,9 @@ public class PlayerController : MonoBehaviour {
 
 	private void PerformMove() {
 		if (inKnockback) return;
-		
+
 		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
-		
+
 		rb.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
@@ -93,15 +95,17 @@ public class PlayerController : MonoBehaviour {
 		jumpingTimer += Time.deltaTime;
 		if (jumpTimer < 0.1f) return;
 
-		if (!isGrounded && !thisFrame && jumpingTimer < 0.6) {
-			rb.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
-		}
-		else if (isGrounded) {
-			jumpingTimer = 0;
+		switch (isGrounded) {
+			case false when !thisFrame && jumpingTimer < 0.6:
+				rb.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+				break;
+			case true:
+				jumpingTimer = 0;
 
-			rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+				rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 
-			jumpTimer = 0;
+				jumpTimer = 0;
+				break;
 		}
 	}
 
@@ -145,14 +149,14 @@ public class PlayerController : MonoBehaviour {
 
 		yield return null;
 	}
-	
+
 	private IEnumerator ImmortalityRoutine(float duration) {
 		isImmortal = true;
-		playerSprite.color = new Color(1f, 1f, 1f, 0.5f);
-		
+		playerEnemyCollider.gameObject.SetActive(false);
+
 		yield return new WaitForSeconds(duration);
-		
+
+		playerEnemyCollider.gameObject.SetActive(false);
 		isImmortal = false;
-		playerSprite.color = Color.white;
 	}
 }

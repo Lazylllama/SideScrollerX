@@ -1,18 +1,39 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SoftSpotScript : MonoBehaviour {
-	private EnemyController enemyController;
-	private StatsController statsController;
+	// Hashes
+	private static readonly int EnemyDie = Animator.StringToHash("enemyDie");
+
+	// Refs
+	private EnemyController  enemyController;
+	private StatsController  statsController;
+	private PlayerController playerController;
+	private Animator         animator;
+	private BoxCollider2D    softSpotCollider;
 
 	private void Start() {
-		enemyController = GetComponentInParent<EnemyController>();
-		statsController = FindAnyObjectByType<StatsController>();
+		enemyController  = GetComponentInParent<EnemyController>();
+		animator         = GetComponentInParent<Animator>();
+		statsController  = FindAnyObjectByType<StatsController>();
+		playerController = FindAnyObjectByType<PlayerController>();
+		softSpotCollider = GetComponent<BoxCollider2D>();
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
 		if (!collision.gameObject.CompareTag("Player")) return;
-
-		Destroy(enemyController.gameObject);
+		if (playerController.isImmortal) return;
+		
+		StartCoroutine(EnemyDieRoutine());
+		softSpotCollider.enabled = false;
 		statsController.RegisterKill();
+	}
+
+	private IEnumerator EnemyDieRoutine() {
+		enemyController.EnemyDie();
+		animator.SetTrigger(EnemyDie);
+		yield return new WaitForSeconds(1.5f);
+		Destroy(enemyController.gameObject);
 	}
 }

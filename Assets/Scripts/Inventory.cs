@@ -41,17 +41,21 @@ public class Inventory : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if (collision.gameObject.CompareTag("BlueKey")) {
-            KeyCollect(false);
-            Destroy(collision.gameObject);
-        } else if (collision.gameObject.CompareTag("RedKey")) {
-            KeyCollect(true);
-            Destroy(collision.gameObject);
-        } else if (collision.gameObject.CompareTag("Coin")) {
-            CoinCollect(1);
-            Destroy(collision.gameObject);
+        // TODO(@lazylllama): Combine key and coin collectors and incl destroy
+        switch (collision.gameObject.tag) {
+            case "BlueKey":
+                KeyCollect(false);
+                Destroy(collision.gameObject);
+                break;
+            case "RedKey":
+                KeyCollect(true);
+                Destroy(collision.gameObject);
+                break;
+            case "Coin":
+                CoinCollect(1);
+                Destroy(collision.gameObject);
+                break;
         }
-
     }
 }
     

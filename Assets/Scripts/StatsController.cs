@@ -36,7 +36,7 @@ public class StatsController : MonoBehaviour {
 		}
 		else {
 			// Apply immortality
-			playerController.PlayerImmortal(5f);
+			playerController.PlayerImmortal(3f);
 		}
 
 		// Update UI

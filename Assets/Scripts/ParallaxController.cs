@@ -10,10 +10,10 @@ public class ParallaxController : MonoBehaviour {
 	[Header("Parallax Settings")]
 	// 0: Move with camera
 	// 1: Stay in place.
-	// Values in between create parallax effect.
+	// Values in between create a parallax effect.
 	[Range(0, 1)] [SerializeField] private float parallaxEffect;
 
-	// Ignore infinite scrolling for moon
+	// Ignore infinite scrolling for the moon
 	[SerializeField] private bool isMoon;
 
 	void Start() {
