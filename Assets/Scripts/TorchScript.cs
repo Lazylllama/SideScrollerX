@@ -1,10 +1,12 @@
 using UnityEngine;
 
+//TODO(@lazylllama): Implement dead-zone
 public class TorchScript : MonoBehaviour {
 	[Header("REFS")]
 	[SerializeField] private GameObject playerObject;
 	private PlayerController playerController;
 	private Animator         animator;
+
 
 	[Header("Torch Settings")]
 	[SerializeField] private float smoothing;
@@ -13,31 +15,24 @@ public class TorchScript : MonoBehaviour {
 	// Hashes
 	private static readonly int IsLit = Animator.StringToHash("isLit");
 
+
 	private void Start() {
 		playerController = FindAnyObjectByType<PlayerController>();
 		animator         = GetComponent<Animator>();
+
+		// Light up the torch on start
 		SetIsLit(true);
 	}
 
 	public void SetIsLit(bool isLit) {
-		animator.SetBool(IsLit, true);
+		animator.SetBool(IsLit, isLit);
 	}
 
-	public void UpdatePosition() {
-		Vector3 playerPosWOffset;
+	private void UpdatePosition() {
+		var playerPosWOffset = playerObject.transform.position +
+		                       new Vector3(playerController.isFacingRight ? offset.x : -offset.x, offset.y, 0);
 
-		if (playerController.isFacingRight) {
-			playerPosWOffset = playerObject.transform.position + new Vector3(offset.x, offset.y, 0);
-		}
-		else {
-			playerPosWOffset = playerObject.transform.position + new Vector3(-offset.x, offset.y, 0);
-		}
-
-		transform.position = Vector3.Lerp(
-		                                  transform.position,
-		                                  playerPosWOffset,
-		                                  smoothing * Time.deltaTime
-		                                 );
+		transform.position = Vector3.Lerp(transform.position, playerPosWOffset, smoothing * Time.deltaTime);
 	}
 
 	private void LateUpdate() {

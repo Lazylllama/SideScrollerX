@@ -3,11 +3,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
-	[Header("Refs")]
-	private InputAction jumpAction, moveAction;
+	// Hashes
+	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
+	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
+	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
+
+	// Refs
+	private InputAction   jumpAction, moveAction;
 	private Vector2       moveInput;
 	private BoxCollider2D playerEnemyCollider;
-	private Rigidbody2D   rb;
+	private Rigidbody2D   playerRigidbody;
 
 
 	[Header("Player Stats")]
@@ -18,22 +23,18 @@ public class PlayerController : MonoBehaviour {
 	public                   bool  isImmortal;
 
 	[Header("Ground Check")]
-	[SerializeField] private float groundCheckRadius;
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
+	[SerializeField] private float     groundCheckRadius;
 	private                  bool      isGrounded;
 	private                  bool      inKnockback;
 
 
 	[Header("Animation")]
+	public bool isFacingRight;
+	private Animator       playerAnimator;
 	private SpriteRenderer playerSprite;
-	private Animator playerAnimator;
-	public  bool     isFacingRight;
 
-	// Hashes
-	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
-	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
-	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	// Timer
 	private float jumpTimer;
@@ -42,9 +43,9 @@ public class PlayerController : MonoBehaviour {
 
 	// Begin Functions
 	private void Start() {
-		rb         = GetComponent<Rigidbody2D>();
-		moveAction = InputSystem.actions.FindAction("Move");
-		jumpAction = InputSystem.actions.FindAction("Jump");
+		playerRigidbody = GetComponent<Rigidbody2D>();
+		moveAction      = InputSystem.actions.FindAction("Move"); // Primarily A & D and arrow keys left & right
+		jumpAction      = InputSystem.actions.FindAction("Jump"); // Primarily Space & W and arrow keys up & down
 
 		playerSprite        = GetComponentInChildren<SpriteRenderer>();
 		playerAnimator      = GetComponentInChildren<Animator>();
@@ -62,20 +63,24 @@ public class PlayerController : MonoBehaviour {
 		PerformMove();
 	}
 
-	void MoveCheck() {
+	private void MoveCheck() {
 		moveInput = moveAction.ReadValue<Vector2>();
 
 		if (inKnockback) return;
 
 		jumpTimer += Time.deltaTime;
 
-		if (moveInput.x < 0) {
-			isFacingRight      = false;
-			playerSprite.flipX = true;
-		}
-		else if (moveInput.x > 0) {
-			isFacingRight      = true;
-			playerSprite.flipX = false;
+
+		switch (moveInput.x) {
+			// If move input is negative, the player is looking left.
+			case < 0:
+				isFacingRight      = false;
+				playerSprite.flipX = true;
+				break;
+			case > 0:
+				isFacingRight      = true;
+				playerSprite.flipX = false;
+				break;
 		}
 
 		if (jumpAction.IsPressed()) {
@@ -88,23 +93,25 @@ public class PlayerController : MonoBehaviour {
 
 		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
 
-		rb.linearVelocityX = moveInput.x * playerSpeed;
+		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
+	// If jumped in past 0.1 seconds => return
+	// If grounded => Let player jump and reset timers
+	// If not gorounded, held space and jumped within 0.6 sec => add extra jump force
+	// TODO(@lazylllama): Rework function to make it more optimized and simple
 	private void PerformJump(bool thisFrame) {
 		jumpingTimer += Time.deltaTime;
 		if (jumpTimer < 0.1f) return;
 
 		switch (isGrounded) {
 			case false when !thisFrame && jumpingTimer < 0.6:
-				rb.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
 				break;
 			case true:
+				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 				jumpingTimer = 0;
-
-				rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-
-				jumpTimer = 0;
+				jumpTimer    = 0;
 				break;
 		}
 	}
@@ -124,8 +131,7 @@ public class PlayerController : MonoBehaviour {
 		if (hit) {
 			isGrounded = true;
 			playerAnimator.SetBool(IsGrounded, true);
-		}
-		else {
+		} else {
 			isGrounded = false;
 			playerAnimator.SetBool(IsGrounded, false);
 		}
@@ -138,25 +144,28 @@ public class PlayerController : MonoBehaviour {
 
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
 		inKnockback = true;
+
+		// Push the player in the opposite way of the enemy direction
 		var knockBackDirection = (transform.position - enemyPosition).normalized;
+		playerRigidbody.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
 
-		rb.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
-
+		// Wait until the player has lifted *before* waiting for touchdown
 		yield return new WaitForSeconds(0.2f);
 		yield return new WaitUntil(() => isGrounded);
 
-		inKnockback = false;
-
-		yield return null;
+		yield return inKnockback = true;
 	}
 
 	private IEnumerator ImmortalityRoutine(float duration) {
 		isImmortal = true;
+
+		// Disable collision with enemies during immortality
 		playerEnemyCollider.gameObject.SetActive(false);
 
 		yield return new WaitForSeconds(duration);
 
 		playerEnemyCollider.gameObject.SetActive(false);
-		isImmortal = false;
+
+		yield return isImmortal = false;
 	}
 }
