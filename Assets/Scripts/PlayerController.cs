@@ -20,21 +20,22 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float jumpForce;
 	[SerializeField] private float extraJumpForce;
 	[SerializeField] private float knockBackPower;
+	[SerializeField] private float coyoteTime;
 	public                   bool  isImmortal;
 
 	[Header("Ground Check")]
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	[SerializeField] private float     groundCheckRadius;
-	private                  bool      isGrounded;
-	private                  bool      inKnockback;
-
+	public                   bool      isGrounded;
+	public                   bool      inKnockback;
+	public                   bool      isCoyoteTimeActive;
+	public                   bool      hasCoyoteJumped;
 
 	[Header("Animation")]
 	public bool isFacingRight;
 	private Animator       playerAnimator;
 	private SpriteRenderer playerSprite;
-
 
 	// Timer
 	private float jumpTimer;
@@ -98,20 +99,29 @@ public class PlayerController : MonoBehaviour {
 
 	// If jumped in past 0.1 seconds => return
 	// If grounded => Let player jump and reset timers
-	// If not gorounded, held space and jumped within 0.6 sec => add extra jump force
+	// If not grounded, held space and jumped within 0.6 sec => add extra jump force
 	// TODO(@lazylllama): Rework function to make it more optimized and simple
 	private void PerformJump(bool thisFrame) {
 		jumpingTimer += Time.deltaTime;
 		if (jumpTimer < 0.1f) return;
 
+		void ResetJump() {
+			jumpingTimer    = 0;
+			jumpTimer       = 0;
+			hasCoyoteJumped = true;
+		}
+		
 		switch (isGrounded) {
-			case false when !thisFrame && jumpingTimer < 0.6:
+			case false when !thisFrame && jumpingTimer < 0.2:
 				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+				break;
+			case false when thisFrame && isCoyoteTimeActive && !hasCoyoteJumped:
+				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+				ResetJump();
 				break;
 			case true:
 				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-				jumpingTimer = 0;
-				jumpTimer    = 0;
+				ResetJump();
 				break;
 		}
 	}
@@ -131,9 +141,11 @@ public class PlayerController : MonoBehaviour {
 		if (hit) {
 			isGrounded = true;
 			playerAnimator.SetBool(IsGrounded, true);
+			hasCoyoteJumped = false;
 		} else {
 			isGrounded = false;
 			playerAnimator.SetBool(IsGrounded, false);
+			if (!isCoyoteTimeActive && !hasCoyoteJumped) StartCoroutine(CoyoteTimeRoutine());
 		}
 	}
 
@@ -153,7 +165,7 @@ public class PlayerController : MonoBehaviour {
 		yield return new WaitForSeconds(0.2f);
 		yield return new WaitUntil(() => isGrounded);
 
-		yield return inKnockback = true;
+		inKnockback = false;
 	}
 
 	private IEnumerator ImmortalityRoutine(float duration) {
@@ -164,8 +176,15 @@ public class PlayerController : MonoBehaviour {
 
 		yield return new WaitForSeconds(duration);
 
-		playerEnemyCollider.gameObject.SetActive(false);
+		playerEnemyCollider.gameObject.SetActive(true);
 
-		yield return isImmortal = false;
+		isImmortal = false;
+	}
+
+	private IEnumerator CoyoteTimeRoutine() {
+		isCoyoteTimeActive = true;
+		hasCoyoteJumped    = false;
+		yield return new WaitForSeconds(coyoteTime);
+		isCoyoteTimeActive = false;
 	}
 }
