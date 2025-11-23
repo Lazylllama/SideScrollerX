@@ -4,6 +4,7 @@ public class StatsController : MonoBehaviour {
 	// Health
 	public float health;
 	public float maxHealth = 3;
+	public bool  IsDead => health <= 0;
 
 	// Ref
 	private UIController     uiController;
@@ -21,8 +22,8 @@ public class StatsController : MonoBehaviour {
 	}
 
 	public void DealDamage(float damageAmount, Vector3 sourcePosition) {
-		// If immune, do nothing
-		if (playerController.isImmortal) {
+		// If immune or dead, do nothing
+		if (playerController.isImmortal || IsDead) {
 			return;
 		}
 
@@ -32,10 +33,9 @@ public class StatsController : MonoBehaviour {
 
 		if (health <= 0) {
 			torchScript.SetIsLit(false);
-		}
-		else {
+		} else {
 			// Apply immortality
-			playerController.PlayerImmortal(3f);
+			playerController.PlayerImmortal(2f);
 		}
 
 		// Update UI
@@ -43,7 +43,7 @@ public class StatsController : MonoBehaviour {
 	}
 
 	public void RegisterKill() {
-		// Register immunity for 5 seconds after a kill
+		// Register immunity for 2 seconds after a kill
 		playerController.PlayerImmortal(2f);
 	}
 }

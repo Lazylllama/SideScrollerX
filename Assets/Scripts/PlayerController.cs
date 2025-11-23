@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,10 +10,11 @@ public class PlayerController : MonoBehaviour {
 	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	// Refs
-	private InputAction   jumpAction, moveAction;
-	private Vector2       moveInput;
-	private BoxCollider2D playerEnemyCollider;
-	private Rigidbody2D   playerRigidbody;
+	private InputAction     jumpAction, moveAction;
+	private Vector2         moveInput;
+	private BoxCollider2D   playerEnemyCollider;
+	private Rigidbody2D     playerRigidbody;
+	private StatsController statsController;
 
 
 	[Header("Player Stats")]
@@ -51,16 +53,17 @@ public class PlayerController : MonoBehaviour {
 		playerSprite        = GetComponentInChildren<SpriteRenderer>();
 		playerAnimator      = GetComponentInChildren<Animator>();
 		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
+		statsController     = FindAnyObjectByType<StatsController>();
 
 		isFacingRight = true;
 	}
 
 	private void Update() {
 		GroundCheck();
-		MoveCheck();
 	}
 
 	private void FixedUpdate() {
+		MoveCheck();
 		PerformMove();
 	}
 
@@ -92,6 +95,9 @@ public class PlayerController : MonoBehaviour {
 	private void PerformMove() {
 		if (inKnockback) return;
 
+		if (statsController.IsDead) {
+		}
+
 		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
 
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
@@ -104,25 +110,24 @@ public class PlayerController : MonoBehaviour {
 	private void PerformJump(bool thisFrame) {
 		jumpingTimer += Time.deltaTime;
 		if (jumpTimer < 0.1f) return;
+		
+		switch (isGrounded) {
+			case false when !thisFrame && jumpingTimer < 0.3f:
+				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+				break;
+			case false when thisFrame && isCoyoteTimeActive && !hasCoyoteJumped:
+			case true:
+				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Force);
+				ResetJump();
+				break;
+		}
+
+		return;
 
 		void ResetJump() {
 			jumpingTimer    = 0;
 			jumpTimer       = 0;
 			hasCoyoteJumped = true;
-		}
-		
-		switch (isGrounded) {
-			case false when !thisFrame && jumpingTimer < 0.2:
-				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
-				break;
-			case false when thisFrame && isCoyoteTimeActive && !hasCoyoteJumped:
-				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-				ResetJump();
-				break;
-			case true:
-				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-				ResetJump();
-				break;
 		}
 	}
 

@@ -3,65 +3,64 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIController : MonoBehaviour
-{
-    // UI Elements
-    [Header("UI Elements")]
-    [SerializeField] List<GameObject> uiHearts;
-    [SerializeField] GameObject uiKeys;
-    [SerializeField] GameObject uiCoins;
+public class UIController : MonoBehaviour {
+	// UI Elements
+	[Header("UI Elements")]
+	[SerializeField] private List<GameObject> uiHearts;
+	[SerializeField] private GameObject uiKeys;
+	[SerializeField] private GameObject uiCoins;
 
-    // Ref
-    StatsController statsController;
-    Inventory inventory;
+	// Ref
+	private StatsController statsController;
+	private Inventory       inventory;
 
-    // Prefabs
-    [Header("Prefabs")]
-    [SerializeField] GameObject blueKeyUIPrefab;
-    [SerializeField] GameObject redKeyUIPrefab;
+	// Prefabs
+	[Header("Prefabs")]
+	[SerializeField] private GameObject blueKeyUIPrefab;
+	[SerializeField] private GameObject redKeyUIPrefab;
 
-    void Start()
-    {
-        // Find the scripts in the scene
-        statsController = FindAnyObjectByType<StatsController>();
-        inventory = FindAnyObjectByType<Inventory>();
+	private void Start() {
+		// Find the scripts in the scene
+		statsController = FindAnyObjectByType<StatsController>();
+		inventory       = FindAnyObjectByType<Inventory>();
 
-        // Update the UI at start
-        UpdateUI();
-    }
+		// Update the UI at start
+		UpdateUI();
+	}
 
-    public void UpdateUI() {
-        float health = statsController.health;
-        int totalKeys = 0;
-        
-        // Health
-        // Jag har ingen aning hur jag lyckades med detta men wow det funkar
-        for (int i = 0; i < uiHearts.Count; i++) {
-           uiHearts[i].GetComponent<Image>().fillAmount = health - i;
-        }
+	public void UpdateUI() {
+		var health    = statsController.health;
+		var totalKeys = 0;
 
-        // Inventory
-        uiCoins.GetComponentInChildren<TextMeshProUGUI>().text = inventory.coins.ToString() + "x";
+		// Health
+		// For every UI heart, set fill to health minus index, fill can be over 1 without breaking
+		for (int i = 0; i < uiHearts.Count; i++) {
+			uiHearts[i].GetComponent<Image>().fillAmount = health - i;
+		}
 
-        foreach (Transform child in uiKeys.transform) {
-            Destroy(child.gameObject);
-        }
+		// Inventory
+		uiCoins.GetComponentInChildren<TextMeshProUGUI>().text = inventory.coins.ToString() + "x";
 
-        for (int i = 0; inventory.blueKeys > i; i++) {
-            GameObject key = Instantiate(blueKeyUIPrefab, uiKeys.transform);
+		// TODO(@lazylllama): Optimize and add animations for adding/removing keys (fly in/out of view), i just have no clue how yet without making it even more stupid
+		// Very inefficient to destroy and recreate every key every time, but works for now since the update frequency is low enough
+		foreach (Transform child in uiKeys.transform) {
+			Destroy(child.gameObject);
+		}
 
-            key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
+		for (int i = 0; inventory.blueKeys > i; i++) {
+			GameObject key = Instantiate(blueKeyUIPrefab, uiKeys.transform);
 
-            totalKeys++;
-        }
+			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
 
-        for (int i = 0; inventory.redKeys > i; i++) {
-            GameObject key = Instantiate(redKeyUIPrefab, uiKeys.transform);
+			totalKeys++;
+		}
 
-            key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
+		for (int i = 0; inventory.redKeys > i; i++) {
+			GameObject key = Instantiate(redKeyUIPrefab, uiKeys.transform);
 
-            totalKeys++;
-        }
+			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
 
-    }
+			totalKeys++;
+		}
+	}
 }
