@@ -2,6 +2,8 @@ using System.ComponentModel;
 using UnityEngine;
 
 public class ParallaxController : MonoBehaviour {
+	#region Fields
+
 	private float   lengthX;
 	private Vector3 startingPos;
 
@@ -18,6 +20,10 @@ public class ParallaxController : MonoBehaviour {
 	// Ignore infinite scrolling for the moon
 	[SerializeField] private bool isMoon;
 	[SerializeField] private bool ignoreY;
+
+	#endregion
+
+	#region Unity Functions
 
 	private void Start() {
 		startingPos = transform.position;
@@ -41,4 +47,6 @@ public class ParallaxController : MonoBehaviour {
 			startingPos.x -= lengthX;
 		}
 	}
+
+	#endregion
 };

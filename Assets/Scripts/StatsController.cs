@@ -1,15 +1,21 @@
 using UnityEngine;
 
 public class StatsController : MonoBehaviour {
-	// Health
+	#region Fields
+
+	//* Health
 	public float health;
 	public float maxHealth = 3;
 	public bool  IsDead => health <= 0;
 
-	// Ref
+	//* Ref
 	private UIController     uiController;
 	private TorchScript      torchScript;
 	private PlayerController playerController;
+
+	#endregion
+
+	#region Unity Functions
 
 	private void Start() {
 		health = maxHealth;
@@ -20,6 +26,10 @@ public class StatsController : MonoBehaviour {
 
 		uiController.UpdateUI();
 	}
+
+	#endregion
+
+	#region Functions
 
 	public void DealDamage(float damageAmount, Vector3 sourcePosition) {
 		// If immune or dead, do nothing
@@ -46,4 +56,6 @@ public class StatsController : MonoBehaviour {
 		// Register immunity for 2 seconds after a kill
 		playerController.PlayerImmortal(2f);
 	}
+
+	#endregion
 }

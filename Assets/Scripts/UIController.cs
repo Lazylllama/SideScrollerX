@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
+	#region Fields
+
 	// UI Elements
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
@@ -18,15 +20,24 @@ public class UIController : MonoBehaviour {
 	[Header("Prefabs")]
 	[SerializeField] private GameObject blueKeyUIPrefab;
 	[SerializeField] private GameObject redKeyUIPrefab;
+	[SerializeField] private GameObject goldKeyUIPrefab;
+
+	#endregion
+
+	#region Unity Functions
 
 	private void Start() {
 		// Find the scripts in the scene
 		statsController = FindAnyObjectByType<StatsController>();
 		inventory       = FindAnyObjectByType<Inventory>();
 
-		// Update the UI at start
+		// Update the UI at the start
 		UpdateUI();
 	}
+
+	#endregion
+
+	#region Functions
 
 	public void UpdateUI() {
 		var health    = statsController.health;
@@ -34,7 +45,7 @@ public class UIController : MonoBehaviour {
 
 		// Health
 		// For every UI heart, set fill to health minus index, fill can be over 1 without breaking
-		for (int i = 0; i < uiHearts.Count; i++) {
+		for (var i = 0; i < uiHearts.Count; i++) {
 			uiHearts[i].GetComponent<Image>().fillAmount = health - i;
 		}
 
@@ -47,20 +58,30 @@ public class UIController : MonoBehaviour {
 			Destroy(child.gameObject);
 		}
 
-		for (int i = 0; inventory.blueKeys > i; i++) {
-			GameObject key = Instantiate(blueKeyUIPrefab, uiKeys.transform);
+		for (var i = 0; inventory.blueKeys > i; i++) {
+			var key = Instantiate(blueKeyUIPrefab, uiKeys.transform);
 
 			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
 
 			totalKeys++;
 		}
 
-		for (int i = 0; inventory.redKeys > i; i++) {
-			GameObject key = Instantiate(redKeyUIPrefab, uiKeys.transform);
+		for (var i = 0; inventory.redKeys > i; i++) {
+			var key = Instantiate(redKeyUIPrefab, uiKeys.transform);
+
+			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
+
+			totalKeys++;
+		}
+
+		for (var i = 0; inventory.goldKeys > i; i++) {
+			var key = Instantiate(goldKeyUIPrefab, uiKeys.transform);
 
 			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
 
 			totalKeys++;
 		}
 	}
+
+	#endregion
 }

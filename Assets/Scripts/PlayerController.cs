@@ -1,21 +1,21 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour {
-	// Hashes
+	#region Fields
+
+	//* Hashes
 	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
 	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
 	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
-	// Refs
+	//* Refs
 	private InputAction     jumpAction, moveAction;
 	private Vector2         moveInput;
 	private BoxCollider2D   playerEnemyCollider;
 	private Rigidbody2D     playerRigidbody;
 	private StatsController statsController;
-
 
 	[Header("Player Stats")]
 	[SerializeField] private float playerSpeed;
@@ -39,12 +39,14 @@ public class PlayerController : MonoBehaviour {
 	private Animator       playerAnimator;
 	private SpriteRenderer playerSprite;
 
-	// Timer
+	//* Timer
 	private float jumpTimer;
 	private float jumpingTimer;
 
+	#endregion
 
-	// Begin Functions
+	#region Unity Functions
+
 	private void Start() {
 		playerRigidbody = GetComponent<Rigidbody2D>();
 		moveAction      = InputSystem.actions.FindAction("Move"); // Primarily A & D and arrow keys left & right
@@ -66,6 +68,10 @@ public class PlayerController : MonoBehaviour {
 		MoveCheck();
 		PerformMove();
 	}
+
+	#endregion
+
+	#region Movement Functions
 
 	private void MoveCheck() {
 		moveInput = moveAction.ReadValue<Vector2>();
@@ -96,6 +102,9 @@ public class PlayerController : MonoBehaviour {
 		if (inKnockback) return;
 
 		if (statsController.IsDead) {
+			playerAnimator.SetBool(IsRunning, false);
+			playerRigidbody.linearVelocityX = 0;
+			return;
 		}
 
 		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
@@ -103,21 +112,22 @@ public class PlayerController : MonoBehaviour {
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
-	// If jumped in past 0.1 seconds => return
-	// If grounded => Let player jump and reset timers
-	// If not grounded, held space and jumped within 0.6 sec => add extra jump force
+	//? If jumped in past 0.1 seconds => return
+	//? If grounded => Let player jump and reset timers
+	//? If not grounded, held space and jumped within 0.6 sec => add extra jump force
 	// TODO(@lazylllama): Rework function to make it more optimized and simple
 	private void PerformJump(bool thisFrame) {
 		jumpingTimer += Time.deltaTime;
 		if (jumpTimer < 0.1f) return;
-		
+
 		switch (isGrounded) {
-			case false when !thisFrame && jumpingTimer < 0.3f:
+			case false when !thisFrame && jumpingTimer < 0.2f:
 				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
+				hasCoyoteJumped = true;
 				break;
 			case false when thisFrame && isCoyoteTimeActive && !hasCoyoteJumped:
 			case true:
-				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Force);
+				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
 				ResetJump();
 				break;
 		}
@@ -129,15 +139,6 @@ public class PlayerController : MonoBehaviour {
 			jumpTimer       = 0;
 			hasCoyoteJumped = true;
 		}
-	}
-
-	public void PlayerImmortal(float duration) {
-		StartCoroutine((ImmortalityRoutine(duration)));
-	}
-
-	public void DamageKnockback(Vector3 enemyPosition) {
-		playerAnimator.SetTrigger(TakeDamage);
-		StartCoroutine(KnockbackRoutine(enemyPosition));
 	}
 
 	private void GroundCheck() {
@@ -154,19 +155,27 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	private void OnDrawGizmos() {
-		Gizmos.color = isGrounded ? Color.green : Color.yellow;
-		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
+	#endregion
+
+	#region Coroutines
+
+	public void PlayerImmortal(float duration) {
+		StartCoroutine((ImmortalityRoutine(duration)));
+	}
+
+	public void DamageKnockback(Vector3 enemyPosition) {
+		playerAnimator.SetTrigger(TakeDamage);
+		StartCoroutine(KnockbackRoutine(enemyPosition));
 	}
 
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
 		inKnockback = true;
 
-		// Push the player in the opposite way of the enemy direction
+		//? Push the player in the opposite way of the enemy direction
 		var knockBackDirection = (transform.position - enemyPosition).normalized;
 		playerRigidbody.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
 
-		// Wait until the player has lifted *before* waiting for touchdown
+		//? Wait until the player has lifted *before* waiting for touchdown
 		yield return new WaitForSeconds(0.2f);
 		yield return new WaitUntil(() => isGrounded);
 
@@ -176,7 +185,7 @@ public class PlayerController : MonoBehaviour {
 	private IEnumerator ImmortalityRoutine(float duration) {
 		isImmortal = true;
 
-		// Disable collision with enemies during immortality
+		//? Disable collision with enemies during immortality
 		playerEnemyCollider.gameObject.SetActive(false);
 
 		yield return new WaitForSeconds(duration);
@@ -192,4 +201,15 @@ public class PlayerController : MonoBehaviour {
 		yield return new WaitForSeconds(coyoteTime);
 		isCoyoteTimeActive = false;
 	}
+
+	#endregion
+
+	#region Other
+
+	private void OnDrawGizmos() {
+		Gizmos.color = isGrounded ? Color.green : Color.yellow;
+		Gizmos.DrawWireSphere(groundCheckPosition.position, groundCheckRadius);
+	}
+
+	#endregion
 }

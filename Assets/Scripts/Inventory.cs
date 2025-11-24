@@ -1,60 +1,75 @@
+using NUnit.Framework;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
-{
-    [Header("Inventory Stats")]
-    public int blueKeys;
-    public int redKeys;
-    public int coins;
+public class Inventory : MonoBehaviour {
+	#region Fields
 
-    // Ref
-    private UIController uiController;
+	[Header("Inventory Stats")]
+	public int blueKeys;
+	public int redKeys;
+	public int goldKeys;
+	public int coins;
 
-    private void Start() {
-        uiController = FindAnyObjectByType<UIController>();
-    }
+	// Ref
+	private UIController uiController;
 
-    private void KeyCollect(bool isRed) {
-        if (!isRed) {
-            blueKeys++;
-        } else {
-            redKeys++;
-        }
+	#endregion
 
-        uiController.UpdateUI();
-    }
+	#region Unity Functions
 
-    private void CoinCollect(int amount) {
-        coins += amount;
-        uiController.UpdateUI();
-    }
+	private void Start() {
+		uiController = FindAnyObjectByType<UIController>();
+	}
 
-    public void SpendKey(bool isRed) {
-        if (blueKeys > 0 && !isRed) {
-            blueKeys--;
-        } else if (redKeys > 0 && isRed) {
-            redKeys--;
-        }
+	#endregion
 
-        uiController.UpdateUI();
-    }
+	// Handle all pickups
+	private void OnTriggerEnter2D(Collider2D collision) {
+		if (collision.gameObject.tag.Contains("Key")) {
+			KeyCollect(collision.gameObject.tag);
+			Destroy(collision.gameObject);
+		} else {
+			switch (collision.gameObject.tag) {
+				case "Coin":
+					CoinCollect(1);
+					Destroy(collision.gameObject);
+					break;
+			}
+		}
+	}
 
-    private void OnTriggerEnter2D(Collider2D collision) {
-        // TODO(@lazylllama): Combine key and coin collectors and incl destroy
-        switch (collision.gameObject.tag) {
-            case "BlueKey":
-                KeyCollect(false);
-                Destroy(collision.gameObject);
-                break;
-            case "RedKey":
-                KeyCollect(true);
-                Destroy(collision.gameObject);
-                break;
-            case "Coin":
-                CoinCollect(1);
-                Destroy(collision.gameObject);
-                break;
-        }
-    }
+	#region Functions
+
+	private void KeyCollect(string type) {
+		switch (type) {
+			case "BlueKey":
+				blueKeys++;
+				break;
+			case "RedKey":
+				redKeys++;
+				break;
+			case "GoldKey":
+				goldKeys++;
+				break;
+		}
+
+		uiController.UpdateUI();
+	}
+
+	private void CoinCollect(int amount) {
+		coins += amount;
+		uiController.UpdateUI();
+	}
+
+	public void SpendKey(bool isRed) {
+		if (blueKeys > 0 && !isRed) {
+			blueKeys--;
+		} else if (redKeys > 0 && isRed) {
+			redKeys--;
+		}
+
+		uiController.UpdateUI();
+	}
+
+	#endregion
 }
-    

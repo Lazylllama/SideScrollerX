@@ -2,14 +2,16 @@ using System;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour {
+	#region Fields
+
 	[Header("States")]
 	public bool lookingRight = true;
 	public bool isDead;
 
 	[Header("Settings")]
-	[SerializeField] float checkDistance;
-	[SerializeField] float speed;
-	[SerializeField] float damageAmount;
+	[SerializeField] private float checkDistance;
+	[SerializeField] private float speed;
+	[SerializeField] private float damageAmount;
 
 	[Header("REFS")]
 	[SerializeField] private Transform lookCheck;
@@ -21,8 +23,12 @@ public class EnemyController : MonoBehaviour {
 	private StatsController statsController;
 	private Animator        animator;
 
-	// Hashes
+	//* Hashes
 	private static readonly int IsWalking = Animator.StringToHash("isWalking");
+
+	#endregion
+
+	#region Unity Functions
 
 	private void Start() {
 		rb              = GetComponent<Rigidbody2D>();
@@ -56,6 +62,16 @@ public class EnemyController : MonoBehaviour {
 		MoveEnemy();
 	}
 
+	private void OnDrawGizmos() {
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(groundCheck.position, checkDistance);
+		Gizmos.DrawWireSphere(lookCheck.position,   checkDistance);
+	}
+
+	#endregion
+
+	#region Functions
+
 	private void MoveEnemy() {
 		// Move enemy no matter dead or alive to create better death animation :)
 		rb.linearVelocityX = transform.right.x * speed;
@@ -72,9 +88,5 @@ public class EnemyController : MonoBehaviour {
 		isDead = true;
 	}
 
-	private void OnDrawGizmos() {
-		Gizmos.color = Color.green;
-		Gizmos.DrawWireSphere(groundCheck.position, checkDistance);
-		Gizmos.DrawWireSphere(lookCheck.position,   checkDistance);
-	}
+	#endregion
 }

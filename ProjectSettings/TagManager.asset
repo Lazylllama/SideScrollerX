@@ -9,6 +9,7 @@ TagManager:
   - Moon
   - BlueKey
   - RedKey
+  - GoldKey
   layers:
   - Default
   - TransparentFX
