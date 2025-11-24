@@ -12,6 +12,7 @@ public class EnemyController : MonoBehaviour {
 	[SerializeField] private float checkDistance;
 	[SerializeField] private float speed;
 	[SerializeField] private float damageAmount;
+	[SerializeField] private bool  isFlyingEnemy;
 
 	[Header("REFS")]
 	[SerializeField] private Transform lookCheck;
@@ -43,19 +44,23 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	private void Update() {
-		var xPos      = gameObject.transform.position.x;
-		var lookHit   = Physics2D.Raycast(lookCheck.position,   Vector2.down, checkDistance, groundLayer);
-		var groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
+		var xPos = gameObject.transform.position.x;
 
-		if (!lookHit.collider && groundHit.collider && !isDead) {
-			lookingRight       =  !lookingRight;
-			transform.rotation *= Quaternion.Euler(0, 180f, 0);
-		} else if (
-			(xPos > pointR.transform.position.x && lookingRight) ||
-			xPos < pointL.transform.position.x && !lookingRight) {
-			lookingRight       =  !lookingRight;
-			transform.rotation *= Quaternion.Euler(0, 180f, 0);
+		if (!isFlyingEnemy) {
+			var lookHit   = Physics2D.Raycast(lookCheck.position,   Vector2.down, checkDistance, groundLayer);
+			var groundHit = Physics2D.Raycast(groundCheck.position, Vector2.down, checkDistance, groundLayer);
+
+			if (!lookHit.collider && groundHit.collider && !isDead) {
+				lookingRight       =  !lookingRight;
+				transform.rotation *= Quaternion.Euler(0, 180f, 0);
+			}
 		}
+
+		if ((!(xPos > pointR.transform.position.x) || !lookingRight) &&
+		    (!(xPos < pointL.transform.position.x) || lookingRight)) return;
+
+		lookingRight       =  !lookingRight;
+		transform.rotation *= Quaternion.Euler(0, 180f, 0);
 	}
 
 	private void FixedUpdate() {
@@ -63,6 +68,7 @@ public class EnemyController : MonoBehaviour {
 	}
 
 	private void OnDrawGizmos() {
+		if (isFlyingEnemy) return;
 		Gizmos.color = Color.green;
 		Gizmos.DrawWireSphere(groundCheck.position, checkDistance);
 		Gizmos.DrawWireSphere(lookCheck.position,   checkDistance);
