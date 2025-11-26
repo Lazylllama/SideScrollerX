@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: FlyingPatrolEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 4444522108960155704, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 5b7dd70aa280d45489e0dbd248d29c03, type: 2}
+    - target: {fileID: 4444522108960155704, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4527259044379336030, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -59,6 +67,14 @@ PrefabInstance:
     - target: {fileID: 6577489545164450606, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7525179022215468190, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7525179022215468190, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8052663259241757649, guid: 640bf89bc81969e47bd266a3d01ccc90, type: 3}
       propertyPath: m_LocalPosition.x

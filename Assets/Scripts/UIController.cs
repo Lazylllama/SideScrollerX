@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
@@ -15,6 +17,10 @@ public class UIController : MonoBehaviour {
 	// Ref
 	private StatsController statsController;
 	private Inventory       inventory;
+	private InputAction     pauseAction;
+	
+	// States
+	private bool isPaused;
 
 	// Prefabs
 	[Header("Prefabs")]
@@ -31,8 +37,17 @@ public class UIController : MonoBehaviour {
 		statsController = FindAnyObjectByType<StatsController>();
 		inventory       = FindAnyObjectByType<Inventory>();
 
+		pauseAction = InputSystem.actions.FindAction("Pause");
+
 		// Update the UI at the start
 		UpdateUI();
+	}
+
+	private void FixedUpdate() {
+		if (pauseAction.IsPressed()) {
+			isPaused = !isPaused;
+			Time.timeScale = isPaused ? 0 : 1;
+		}
 	}
 
 	#endregion

@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour {
 			playerRigidbody.linearVelocityX = 0;
 			return;
 		}
-
+		
 		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
 
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class EnemyController : MonoBehaviour {
 	#region Fields
@@ -16,16 +17,17 @@ public class EnemyController : MonoBehaviour {
 
 	[Header("REFS")]
 	[SerializeField] private Transform lookCheck;
-	[SerializeField] private Transform  groundCheck;
-	[SerializeField] private LayerMask  groundLayer;
-	[SerializeField] private GameObject pointL, pointR;
+	[SerializeField] private Transform   groundCheck;
+	[SerializeField] private LayerMask   groundLayer;
+	[SerializeField] private GameObject  pointL,     pointR;
 
 	private Rigidbody2D     rb;
 	private StatsController statsController;
 	private Animator        animator;
 
 	//* Hashes
-	private static readonly int IsWalking = Animator.StringToHash("isWalking");
+	private static readonly int IsWalking  = Animator.StringToHash("isWalking");
+	private static readonly int IsFloating = Animator.StringToHash("isFloating");
 
 	#endregion
 
@@ -35,6 +37,8 @@ public class EnemyController : MonoBehaviour {
 		rb              = GetComponent<Rigidbody2D>();
 		statsController = FindAnyObjectByType<StatsController>();
 		animator        = GetComponent<Animator>();
+		
+		animator.SetBool(IsFloating, isFlyingEnemy);
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
