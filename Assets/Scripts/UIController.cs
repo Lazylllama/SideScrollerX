@@ -1,4 +1,4 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -15,10 +15,14 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private GameObject uiCoins;
 
 	// Ref
-	private StatsController statsController;
-	private Inventory       inventory;
-	private InputAction     pauseAction;
-	
+	[Header("Refs")]
+	[SerializeField] private Animator hudAnimator;
+	[SerializeField] private Animator        pauseMenuAnimator;
+	[SerializeField] private Animator        cmAnimator;
+	private                  StatsController statsController;
+	private                  Inventory       inventory;
+	private                  InputAction     pauseAction;
+
 	// States
 	private bool isPaused;
 
@@ -27,6 +31,11 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private GameObject blueKeyUIPrefab;
 	[SerializeField] private GameObject redKeyUIPrefab;
 	[SerializeField] private GameObject goldKeyUIPrefab;
+
+	// Hashes
+	private static readonly int IsPauseMenuVisible = Animator.StringToHash("isPauseMenuVisible");
+	private static readonly int IsHudVisible       = Animator.StringToHash("isHudVisible");
+	private static readonly int IsZoomedOut        = Animator.StringToHash("isZoomedOut");
 
 	#endregion
 
@@ -39,14 +48,17 @@ public class UIController : MonoBehaviour {
 
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
+		hudAnimator.SetBool(IsHudVisible, true);
+		pauseMenuAnimator.SetBool(IsPauseMenuVisible, false);
+		cmAnimator.SetBool(IsZoomedOut, false);
+
 		// Update the UI at the start
 		UpdateUI();
 	}
 
 	private void FixedUpdate() {
 		if (pauseAction.IsPressed()) {
-			isPaused = !isPaused;
-			Time.timeScale = isPaused ? 0 : 1;
+			StartCoroutine(PauseRoutine());
 		}
 	}
 
@@ -96,6 +108,21 @@ public class UIController : MonoBehaviour {
 
 			totalKeys++;
 		}
+	}
+
+	#endregion
+
+	#region Routines
+
+	private IEnumerator PauseRoutine() {
+		isPaused = true;
+		hudAnimator.SetBool(IsHudVisible, false);
+		pauseMenuAnimator.SetBool(IsPauseMenuVisible, true);
+		cmAnimator.SetBool(IsZoomedOut, true);
+
+		yield return new WaitForSeconds(1.25f);
+
+		Time.timeScale = 0;
 	}
 
 	#endregion

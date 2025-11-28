@@ -111,7 +111,7 @@ public class PlayerController : MonoBehaviour {
 
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
 	}
-
+	
 	//? If jumped in past 0.1 seconds => return
 	//? If grounded => Let player jump and reset timers
 	//? If not grounded, held space and jumped within 0.6 sec => add extra jump force
