@@ -45,7 +45,7 @@ public class StatsController : MonoBehaviour {
 			torchScript.SetIsLit(false);
 		} else {
 			// Apply immortality
-			playerController.PlayerImmortal(2f);
+			playerController.PlayerImmortal(1.25f);
 		}
 
 		// Update UI
@@ -53,8 +53,9 @@ public class StatsController : MonoBehaviour {
 	}
 
 	public void RegisterKill() {
-		// Register immunity for 2 seconds after a kill
-		playerController.PlayerImmortal(2f);
+		// Register immunity for 0.2 seconds after a kill
+		// To avoid bad problems with cramming or whatever might happen
+		playerController.PlayerImmortal(0.2f);
 	}
 
 	#endregion

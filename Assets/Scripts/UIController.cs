@@ -24,7 +24,7 @@ public class UIController : MonoBehaviour {
 	private                  InputAction     pauseAction;
 
 	// States
-	private bool isPaused;
+	public bool isPaused;
 
 	// Prefabs
 	[Header("Prefabs")]

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour {
 
 	[Header("Animation")]
 	public bool isFacingRight;
+	private Animator       playerSpriteAnimator;
 	private Animator       playerAnimator;
 	private SpriteRenderer playerSprite;
 
@@ -45,17 +47,26 @@ public class PlayerController : MonoBehaviour {
 
 	#endregion
 
-	#region Unity Functions
+	#region Unity Functions	
 
 	private void Start() {
 		playerRigidbody = GetComponent<Rigidbody2D>();
 		moveAction      = InputSystem.actions.FindAction("Move"); // Primarily A & D and arrow keys left & right
 		jumpAction      = InputSystem.actions.FindAction("Jump"); // Primarily Space & W and arrow keys up & down
 
+		var playerAnimators = GetComponentsInChildren<Animator>();
 		playerSprite        = GetComponentInChildren<SpriteRenderer>();
-		playerAnimator      = GetComponentInChildren<Animator>();
+		playerAnimator      = GetComponent<Animator>();
 		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
 		statsController     = FindAnyObjectByType<StatsController>();
+
+		// TODO(@lazylllama): Clean this up later
+		//? Find the other animator and set it as the player sprite animator
+		foreach (var animator in playerAnimators) {
+			if (animator == playerAnimator) continue;
+			playerSpriteAnimator = animator;
+			break;
+		}
 
 		isFacingRight = true;
 	}
@@ -102,16 +113,16 @@ public class PlayerController : MonoBehaviour {
 		if (inKnockback) return;
 
 		if (statsController.IsDead) {
-			playerAnimator.SetBool(IsRunning, false);
+			playerSpriteAnimator.SetBool(IsRunning, false);
 			playerRigidbody.linearVelocityX = 0;
 			return;
 		}
-		
-		playerAnimator.SetBool(IsRunning, moveInput.x != 0);
+
+		playerSpriteAnimator.SetBool(IsRunning, moveInput.x != 0);
 
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
 	}
-	
+
 	//? If jumped in past 0.1 seconds => return
 	//? If grounded => Let player jump and reset timers
 	//? If not grounded, held space and jumped within 0.6 sec => add extra jump force
@@ -146,11 +157,11 @@ public class PlayerController : MonoBehaviour {
 
 		if (hit) {
 			isGrounded = true;
-			playerAnimator.SetBool(IsGrounded, true);
+			playerSpriteAnimator.SetBool(IsGrounded, true);
 			hasCoyoteJumped = false;
 		} else {
 			isGrounded = false;
-			playerAnimator.SetBool(IsGrounded, false);
+			playerSpriteAnimator.SetBool(IsGrounded, false);
 			if (!isCoyoteTimeActive && !hasCoyoteJumped) StartCoroutine(CoyoteTimeRoutine());
 		}
 	}
@@ -164,6 +175,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void DamageKnockback(Vector3 enemyPosition) {
+		playerSpriteAnimator.SetTrigger(TakeDamage);
 		playerAnimator.SetTrigger(TakeDamage);
 		StartCoroutine(KnockbackRoutine(enemyPosition));
 	}
