@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,9 +38,10 @@ public class PlayerController : MonoBehaviour {
 
 	[Header("Animation")]
 	public bool isFacingRight;
-	private Animator       playerSpriteAnimator;
-	private Animator       playerAnimator;
-	private SpriteRenderer playerSprite;
+	private Animator                 playerSpriteAnimator;
+	private Animator                 playerAnimator;
+	private SpriteRenderer           playerSprite;
+	private CinemachineImpulseSource playerImpulseSource;
 
 	//* Timer
 	private float jumpTimer;
@@ -47,7 +49,7 @@ public class PlayerController : MonoBehaviour {
 
 	#endregion
 
-	#region Unity Functions	
+	#region Unity Functions
 
 	private void Start() {
 		playerRigidbody = GetComponent<Rigidbody2D>();
@@ -58,6 +60,7 @@ public class PlayerController : MonoBehaviour {
 		playerSprite        = GetComponentInChildren<SpriteRenderer>();
 		playerAnimator      = GetComponent<Animator>();
 		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
+		playerImpulseSource = GetComponent<CinemachineImpulseSource>();
 		statsController     = FindAnyObjectByType<StatsController>();
 
 		// TODO(@lazylllama): Clean this up later
@@ -182,6 +185,9 @@ public class PlayerController : MonoBehaviour {
 
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
 		inKnockback = true;
+		
+		//? Camera shake
+		playerImpulseSource.GenerateImpulseWithForce(0.6f);
 
 		//? Push the player in the opposite way of the enemy direction
 		var knockBackDirection = (transform.position - enemyPosition).normalized;
