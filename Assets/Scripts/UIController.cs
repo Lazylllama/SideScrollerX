@@ -58,7 +58,7 @@ public class UIController : MonoBehaviour {
 
 	private void FixedUpdate() {
 		if (pauseAction.IsPressed()) {
-			StartCoroutine(PauseRoutine());
+			StartCoroutine(PauseRoutine(true));
 		}
 	}
 
@@ -110,19 +110,30 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
+	
+	//* Pause Menu Functions
+	public void ExitToMenu() {
+		Debug.Log("sigma");
+	}
+
+	public void ResumeGame() {
+		StartCoroutine(PauseRoutine(false));
+	}
+
 	#endregion
 
 	#region Routines
 
-	private IEnumerator PauseRoutine() {
-		isPaused = true;
-		hudAnimator.SetBool(IsHudVisible, false);
-		pauseMenuAnimator.SetBool(IsPauseMenuVisible, true);
-		cmAnimator.SetBool(IsZoomedOut, true);
+	private IEnumerator PauseRoutine(bool pauseState) {
+		isPaused = pauseState;
+
+		cmAnimator.SetBool(IsZoomedOut, isPaused);
+		hudAnimator.SetBool(IsHudVisible, !isPaused);
+		pauseMenuAnimator.SetBool(IsPauseMenuVisible, isPaused);
 
 		yield return new WaitForSeconds(1.25f);
 
-		Time.timeScale = 0;
+		Time.timeScale = isPaused ? 0f : 1f;
 	}
 
 	#endregion
