@@ -110,10 +110,10 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
-	
+
 	//* Pause Menu Functions
 	public void ExitToMenu() {
-		Debug.Log("sigma");
+		cmAnimator.SetBool(IsZoomedOut, isPaused);
 	}
 
 	public void ResumeGame() {
@@ -127,13 +127,20 @@ public class UIController : MonoBehaviour {
 	private IEnumerator PauseRoutine(bool pauseState) {
 		isPaused = pauseState;
 
-		cmAnimator.SetBool(IsZoomedOut, isPaused);
 		hudAnimator.SetBool(IsHudVisible, !isPaused);
 		pauseMenuAnimator.SetBool(IsPauseMenuVisible, isPaused);
 
-		yield return new WaitForSeconds(1.25f);
+		// Time no worky when paused
+		if (isPaused) yield return new WaitForSeconds(0.5f);
 
 		Time.timeScale = isPaused ? 0f : 1f;
+	}
+
+	public IEnumerator NextLevel() {
+		yield return new WaitForSeconds(0.2f);
+		Time.timeScale = 0f;
+
+		cmAnimator.SetBool(IsZoomedOut, true);
 	}
 
 	#endregion
