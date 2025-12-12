@@ -346,7 +346,7 @@ CapsuleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1.09, y: 0.8}
+  m_Size: {x: 1, y: 0.67}
   m_Direction: 1
 --- !u!114 &8734782721082058988
 MonoBehaviour:
@@ -361,11 +361,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   lookingRight: 1
-  isGrounded: 0
   isDead: 0
   checkDistance: 0.4
   speed: 3
   damageAmount: 0.5
+  isFlyingEnemy: 0
   lookCheck: {fileID: 1059849307955793356}
   groundCheck: {fileID: 816418924649292900}
   groundLayer:

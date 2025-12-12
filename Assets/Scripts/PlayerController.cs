@@ -12,11 +12,12 @@ public class PlayerController : MonoBehaviour {
 	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	//* Refs
-	private InputAction     jumpAction, moveAction;
+	private InputAction     jumpAction, moveAction, bombAction;
 	private Vector2         moveInput;
 	private BoxCollider2D   playerEnemyCollider;
 	private Rigidbody2D     playerRigidbody;
 	private StatsController statsController;
+	private Inventory       inventory;
 
 	[Header("Player Stats")]
 	[SerializeField] private float playerSpeed;
@@ -42,6 +43,9 @@ public class PlayerController : MonoBehaviour {
 	private SpriteRenderer           playerSprite;
 	private CinemachineImpulseSource playerImpulseSource;
 
+	[Header("Prefabs")]
+	[SerializeField] private GameObject bombPrefab;
+
 	//* Timer
 	private float jumpTimer;
 	private float jumpingTimer;
@@ -52,15 +56,18 @@ public class PlayerController : MonoBehaviour {
 
 	private void Start() {
 		playerRigidbody = GetComponent<Rigidbody2D>();
-		moveAction      = InputSystem.actions.FindAction("Move"); // Primarily A & D and arrow keys left & right
-		jumpAction      = InputSystem.actions.FindAction("Jump"); // Primarily Space & W and arrow keys up & down
+		moveAction      = InputSystem.actions.FindAction("Move");     // Primarily A & D and arrow keys left & right
+		jumpAction      = InputSystem.actions.FindAction("Jump");     // Primarily Space & W and arrow keys up & down
+		bombAction      = InputSystem.actions.FindAction("Interact"); // Primarily E key
 
 		var playerAnimators = GetComponentsInChildren<Animator>();
-		playerSprite        = GetComponentInChildren<SpriteRenderer>();
+
 		playerAnimator      = GetComponent<Animator>();
-		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
 		playerImpulseSource = GetComponent<CinemachineImpulseSource>();
+		playerSprite        = GetComponentInChildren<SpriteRenderer>();
+		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
 		statsController     = FindAnyObjectByType<StatsController>();
+		inventory           = FindAnyObjectByType<Inventory>();
 
 		// TODO(@lazylllama): Clean this up later
 		//? Find the other animator and set it as the player sprite animator
@@ -80,6 +87,7 @@ public class PlayerController : MonoBehaviour {
 	private void FixedUpdate() {
 		MoveCheck();
 		PerformMove();
+		ActionCheck();
 	}
 
 	#endregion
@@ -168,6 +176,14 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
+	private void ActionCheck() {
+		if (statsController.IsDead) return;
+		if (bombAction.WasPressedThisFrame() && inventory.hasBomb) {
+			inventory.UseBomb();
+			Instantiate(bombPrefab, transform.position, Quaternion.identity);
+		}
+	}
+
 	#endregion
 
 	#region Coroutines
@@ -184,7 +200,7 @@ public class PlayerController : MonoBehaviour {
 
 	private IEnumerator KnockbackRoutine(Vector3 enemyPosition, float forceMult = 1f) {
 		inKnockback = true;
-		
+
 		//? Camera shake
 		playerImpulseSource.GenerateImpulseWithForce(0.6f);
 

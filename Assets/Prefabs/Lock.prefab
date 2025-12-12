@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5761467037666872039}
   - component: {fileID: 2292684626706610068}
   - component: {fileID: 4429522876674564204}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Lock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -743281907
-  m_SortingLayer: 7
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: 472128734152351388, guid: 174ffe97fcd25084884bac08410fcf1d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -104,6 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53d2f46bb087f224280ae4dd07517001, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  isRedDoor: 0
 --- !u!61 &4429522876674564204
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -114,7 +115,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5b7dd70aa280d45489e0dbd248d29c03, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -16,13 +16,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: RedLock
       objectReference: {fileID: 0}
+    - target: {fileID: 4429522876674564204, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 5b7dd70aa280d45489e0dbd248d29c03, type: 2}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.13000011
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 3.3300002
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalPosition.z
@@ -34,15 +38,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 4507127764388957901, guid: 46027eaa8f50fe2468bc3f7660e7a0ee, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

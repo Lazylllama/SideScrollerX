@@ -36,7 +36,7 @@ public class Inventory : MonoBehaviour {
 					Destroy(collision.gameObject);
 					break;
 				case "BombPickup":
-					hasBomb = true;
+					BombCollect();
 					Destroy(collision.gameObject);
 					break;
 			}
@@ -66,6 +66,11 @@ public class Inventory : MonoBehaviour {
 		uiController.UpdateUI();
 	}
 
+	private void BombCollect() {
+		hasBomb = true;
+		uiController.UpdateUI();
+	}
+	
 	public void SpendKey(bool isRed) {
 		if (blueKeys > 0 && !isRed) {
 			blueKeys--;
@@ -76,5 +81,9 @@ public class Inventory : MonoBehaviour {
 		uiController.UpdateUI();
 	}
 
+	public void UseBomb() {
+		hasBomb = false;
+		uiController.UpdateUI();
+	}
 	#endregion
 }

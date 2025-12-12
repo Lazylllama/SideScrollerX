@@ -13,6 +13,7 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private List<GameObject> uiHearts;
 	[SerializeField] private GameObject uiKeys;
 	[SerializeField] private GameObject uiCoins;
+	[SerializeField] private GameObject uiBomb;
 
 	// Ref
 	[Header("Refs")]
@@ -22,6 +23,7 @@ public class UIController : MonoBehaviour {
 	private                  StatsController statsController;
 	private                  Inventory       inventory;
 	private                  InputAction     pauseAction;
+	private                  TextMeshProUGUI uiCoinsText;
 
 	// States
 	public bool isPaused;
@@ -45,6 +47,7 @@ public class UIController : MonoBehaviour {
 		// Find the scripts in the scene
 		statsController = FindAnyObjectByType<StatsController>();
 		inventory       = FindAnyObjectByType<Inventory>();
+		uiCoinsText     = uiCoins.GetComponentInChildren<TextMeshProUGUI>();
 
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
@@ -77,7 +80,8 @@ public class UIController : MonoBehaviour {
 		}
 
 		// Inventory
-		uiCoins.GetComponentInChildren<TextMeshProUGUI>().text = inventory.coins.ToString() + "x";
+		uiCoinsText.text = inventory.coins.ToString() + "x";
+		uiBomb.SetActive(inventory.hasBomb);
 
 		// TODO(@lazylllama): Optimize and add animations for adding/removing keys (fly in/out of view), i just have no clue how yet without making it even more stupid
 		// Very inefficient to destroy and recreate every key every time, but works for now since the update frequency is low enough
