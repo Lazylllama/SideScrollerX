@@ -31,7 +31,7 @@ public class StatsController : MonoBehaviour {
 
 	#region Functions
 
-	public void DealDamage(float damageAmount, Vector3 sourcePosition) {
+	public void DealDamage(float damageAmount, Vector3 sourcePosition, float forceMult = 1f) {
 		// If immune or dead, do nothing
 		if (playerController.isImmortal || IsDead) {
 			return;
@@ -39,7 +39,7 @@ public class StatsController : MonoBehaviour {
 
 		// Deal damage and apply knockback
 		health -= damageAmount;
-		playerController.DamageKnockback(sourcePosition);
+		playerController.DamageKnockback(sourcePosition, forceMult);
 
 		if (health <= 0) {
 			torchScript.SetIsLit(false);

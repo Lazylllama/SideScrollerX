@@ -186,7 +186,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
+  m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 5896929393758412000, guid: 41cef02f674cc034f90dd965a37b8f8f, type: 2}
@@ -208,8 +208,8 @@ MeshRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -743281907
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &5403430908880920883
@@ -232,7 +232,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5
+  m_text: 3
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 41cef02f674cc034f90dd965a37b8f8f, type: 2}
   m_sharedMaterial: {fileID: 5896929393758412000, guid: 41cef02f674cc034f90dd965a37b8f8f, type: 2}
@@ -337,13 +337,14 @@ GameObject:
   - component: {fileID: 5780732491686510220}
   - component: {fileID: 6165666691455337352}
   - component: {fileID: 5280723138821463564}
+  - component: {fileID: 8749947436136450294}
   m_Layer: 6
   m_Name: Boom
   m_TagString: Boom
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &5780732491686510220
 Transform:
   m_ObjectHideFlags: 0
@@ -403,11 +404,11 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -743281907
+  m_SortingLayer: 5
+  m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.041236196, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.3100996, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -447,12 +448,25 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.51
+--- !u!114 &8749947436136450294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5402468017709578667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f9185adb450b34188f5f2d5416ae1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  forceMult: 2
 --- !u!1 &7744160405538422998
 GameObject:
   m_ObjectHideFlags: 0
@@ -532,8 +546,8 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 227162135
-  m_SortingLayer: 0
+  m_SortingLayerID: -743281907
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_Sprite: {fileID: -2613247888821195678, guid: f86962a68838d2d49861e33b34dc2e63, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -581,7 +595,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.4765625
+  m_Radius: 0.5
 --- !u!50 &8338628718837341134
 Rigidbody2D:
   serializedVersion: 5

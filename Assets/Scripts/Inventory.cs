@@ -6,9 +6,10 @@ public class Inventory : MonoBehaviour {
 
 	[Header("Inventory Stats")]
 	public int blueKeys;
-	public int redKeys;
-	public int goldKeys;
-	public int coins;
+	public int  redKeys;
+	public int  goldKeys;
+	public int  coins;
+	public bool hasBomb;
 
 	// Ref
 	private UIController uiController;
@@ -32,6 +33,10 @@ public class Inventory : MonoBehaviour {
 			switch (collision.gameObject.tag) {
 				case "Coin":
 					CoinCollect(1);
+					Destroy(collision.gameObject);
+					break;
+				case "BombPickup":
+					hasBomb = true;
 					Destroy(collision.gameObject);
 					break;
 			}

@@ -21,7 +21,10 @@ public class Bomb : MonoBehaviour {
 	[SerializeField] private float bombTimer  = 3f;
 
 	//* Variables
-	private float countTimer = 3f;
+	private float countTimer;
+
+	//* Hashes
+	private static readonly int BombBoom = Animator.StringToHash("bombBoom");
 
 	#endregion
 
@@ -31,10 +34,12 @@ public class Bomb : MonoBehaviour {
 		impulseSource = GetComponent<CinemachineImpulseSource>();
 		bombRb        = GetComponentInChildren<Rigidbody2D>();
 		countText     = GetComponentInChildren<TMP_Text>();
-
+		animator      = GetComponentInChildren<Animator>();
 		bombRb.AddForce((transform.right + transform.up) * throwForce);
 
 		StartCoroutine(BombTimer());
+
+		countTimer = bombTimer;
 	}
 
 
@@ -54,10 +59,11 @@ public class Bomb : MonoBehaviour {
 
 		bombRb.bodyType = RigidbodyType2D.Static;
 
+		animator.SetTrigger(BombBoom);
 		impulseSource.GenerateImpulse();
-		
+
 		yield return new WaitForSeconds(0.25f);
-		
+
 		Destroy(gameObject);
 	}
 

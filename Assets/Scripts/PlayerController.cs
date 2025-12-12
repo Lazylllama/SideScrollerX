@@ -176,13 +176,13 @@ public class PlayerController : MonoBehaviour {
 		StartCoroutine((ImmortalityRoutine(duration)));
 	}
 
-	public void DamageKnockback(Vector3 enemyPosition) {
+	public void DamageKnockback(Vector3 enemyPosition, float forceMult = 1f) {
 		playerSpriteAnimator.SetTrigger(TakeDamage);
 		playerAnimator.SetTrigger(TakeDamage);
-		StartCoroutine(KnockbackRoutine(enemyPosition));
+		StartCoroutine(KnockbackRoutine(enemyPosition, forceMult));
 	}
 
-	private IEnumerator KnockbackRoutine(Vector3 enemyPosition) {
+	private IEnumerator KnockbackRoutine(Vector3 enemyPosition, float forceMult = 1f) {
 		inKnockback = true;
 		
 		//? Camera shake
@@ -190,7 +190,7 @@ public class PlayerController : MonoBehaviour {
 
 		//? Push the player in the opposite way of the enemy direction
 		var knockBackDirection = (transform.position - enemyPosition).normalized;
-		playerRigidbody.AddForce(knockBackDirection * knockBackPower, ForceMode2D.Impulse);
+		playerRigidbody.AddForce(knockBackDirection * (knockBackPower * forceMult), ForceMode2D.Impulse);
 
 		//? Wait until the player has lifted *before* waiting for touchdown
 		yield return new WaitForSeconds(0.2f);
