@@ -89,12 +89,18 @@ public class PlayerController : MonoBehaviour {
 		PerformMove();
 		ActionCheck();
 	}
+	
+	private void OnTriggerEnter2D(Collider2D other) {
+		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
+		statsController.DealDamage(3f, transform.position);
+	}
 
 	#endregion
 
 	#region Movement Functions
 
 	private void MoveCheck() {
+		if (statsController.LevelPause) return;
 		moveInput = moveAction.ReadValue<Vector2>();
 
 		if (inKnockback) return;
@@ -122,7 +128,7 @@ public class PlayerController : MonoBehaviour {
 	private void PerformMove() {
 		if (inKnockback) return;
 
-		if (statsController.IsDead) {
+		if (statsController.LevelPause) {
 			playerSpriteAnimator.SetBool(IsRunning, false);
 			playerRigidbody.linearVelocityX = 0;
 			return;
@@ -177,7 +183,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void ActionCheck() {
-		if (statsController.IsDead) return;
+		if (statsController.LevelPause) return;
 		if (bombAction.WasPressedThisFrame() && inventory.hasBomb) {
 			inventory.UseBomb();
 			Instantiate(bombPrefab, transform.position, Quaternion.identity);

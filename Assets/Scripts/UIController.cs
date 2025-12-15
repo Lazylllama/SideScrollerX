@@ -70,12 +70,6 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
-	private void OnCollisionEnter2D(Collision2D other) {
-		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
-		statsController
-
-	}
-
 	#endregion
 
 	#region Functions

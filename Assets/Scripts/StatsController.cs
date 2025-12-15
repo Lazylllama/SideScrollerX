@@ -3,10 +3,14 @@ using UnityEngine;
 public class StatsController : MonoBehaviour {
 	#region Fields
 
-	//* Health
+	//* Stats
+	public  bool levelPlaying;
+	public  int  level;
+	private int  levelMax = 5;
+
 	public float health;
 	public float maxHealth = 3;
-	public bool  IsDead => health <= 0;
+	public bool  LevelPause => (health <= 0) || (level >= levelMax) || !levelPlaying;
 
 	//* Ref
 	private UIController     uiController;
@@ -31,9 +35,14 @@ public class StatsController : MonoBehaviour {
 
 	#region Functions
 
+	public void StartNextLevel() {
+		levelPlaying =  true;
+		level        += 1;
+	}
+
 	public void DealDamage(float damageAmount, Vector3 sourcePosition, float forceMult = 1f) {
-		// If immune or dead, do nothing
-		if (playerController.isImmortal || IsDead) {
+		// If immune or level paused, do nothing
+		if (playerController.isImmortal || LevelPause) {
 			return;
 		}
 

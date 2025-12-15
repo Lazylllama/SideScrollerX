@@ -10,13 +10,12 @@ TagManager:
   - BlueKey
   - RedKey
   - GoldKey
-  - spring
   - Bomb
   - FlyingEnemy
   - Boom
   - JumpPad
   - BombPickup
-  - explosion
+  - PlayerDeathBorder
   layers:
   - Default
   - TransparentFX
@@ -28,7 +27,7 @@ TagManager:
   - Player
   - Pickup
   - Bomb
-  - 
+  - Lock
   - 
   - 
   - 
