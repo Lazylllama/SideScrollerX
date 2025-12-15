@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour {
 
 	//* Refs
 	private InputAction     jumpAction, moveAction, bombAction;
-	private Vector2         moveInput;
 	private BoxCollider2D   playerEnemyCollider;
 	private Rigidbody2D     playerRigidbody;
 	private StatsController statsController;
@@ -31,10 +30,10 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	[SerializeField] private float     groundCheckRadius;
-	public                   bool      isGrounded;
-	public                   bool      inKnockback;
-	public                   bool      isCoyoteTimeActive;
-	public                   bool      hasCoyoteJumped;
+	private                   bool      isGrounded;
+	private                   bool      inKnockback;
+	private                   bool      isCoyoteTimeActive;
+	private                   bool      hasCoyoteJumped;
 
 	[Header("Animation")]
 	public bool isFacingRight;
@@ -49,6 +48,9 @@ public class PlayerController : MonoBehaviour {
 	//* Timer
 	private float jumpTimer;
 	private float jumpingTimer;
+
+	//* States
+	private Vector2 moveInput;
 
 	#endregion
 
@@ -89,7 +91,7 @@ public class PlayerController : MonoBehaviour {
 		PerformMove();
 		ActionCheck();
 	}
-	
+
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
 		statsController.DealDamage(3f, transform.position);

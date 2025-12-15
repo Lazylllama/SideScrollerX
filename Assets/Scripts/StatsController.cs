@@ -10,7 +10,7 @@ public class StatsController : MonoBehaviour {
 
 	public float health;
 	public float maxHealth = 3;
-	public bool  LevelPause => (health <= 0) || (level >= levelMax) || !levelPlaying;
+	public bool  LevelPause => (health <= 0)  || !levelPlaying;
 
 	//* Ref
 	private UIController     uiController;
