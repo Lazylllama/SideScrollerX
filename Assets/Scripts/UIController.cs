@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,13 +18,15 @@ public class UIController : MonoBehaviour {
 
 	// Ref
 	[Header("Refs")]
+	[SerializeField] private Animator startMenuAnimator;
 	[SerializeField] private Animator hudAnimator;
-	[SerializeField] private Animator        pauseMenuAnimator;
-	[SerializeField] private Animator        cmAnimator;
-	private                  StatsController statsController;
-	private                  Inventory       inventory;
-	private                  InputAction     pauseAction;
-	private                  TextMeshProUGUI uiCoinsText;
+	[SerializeField] private Animator pauseMenuAnimator;
+	[SerializeField] private Animator cmAnimator;
+
+	private StatsController statsController;
+	private Inventory       inventory;
+	private InputAction     pauseAction;
+	private TextMeshProUGUI uiCoinsText;
 
 	// States
 	public bool isPaused;
@@ -38,6 +41,8 @@ public class UIController : MonoBehaviour {
 	private static readonly int IsPauseMenuVisible = Animator.StringToHash("isPauseMenuVisible");
 	private static readonly int IsHudVisible       = Animator.StringToHash("isHudVisible");
 	private static readonly int IsZoomedOut        = Animator.StringToHash("isZoomedOut");
+	private static readonly int HasMenuOffset      = Animator.StringToHash("hasMenuOffset");
+	private static readonly int MenuFlyAway        = Animator.StringToHash("menuFlyAway");
 
 	#endregion
 
@@ -51,7 +56,7 @@ public class UIController : MonoBehaviour {
 
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
-		hudAnimator.SetBool(IsHudVisible, true);
+		hudAnimator.SetBool(IsHudVisible, false);
 		pauseMenuAnimator.SetBool(IsPauseMenuVisible, false);
 		cmAnimator.SetBool(IsZoomedOut, false);
 
@@ -63,6 +68,12 @@ public class UIController : MonoBehaviour {
 		if (pauseAction.IsPressed()) {
 			StartCoroutine(PauseRoutine(true));
 		}
+	}
+
+	private void OnCollisionEnter2D(Collision2D other) {
+		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
+		statsController
+
 	}
 
 	#endregion
@@ -114,6 +125,14 @@ public class UIController : MonoBehaviour {
 		}
 	}
 
+	public void StartLevel() {
+		StartCoroutine(StartLevelRoutine());
+	}
+
+	public void ExitGame() {
+		Application.Quit();
+	}
+
 
 	//* Pause Menu Functions
 	public void ExitToMenu() {
@@ -145,6 +164,20 @@ public class UIController : MonoBehaviour {
 		Time.timeScale = 0f;
 
 		cmAnimator.SetBool(IsZoomedOut, true);
+	}
+
+	private IEnumerator StartLevelRoutine() {
+		if (!statsController.LevelPause) yield break;
+
+		cmAnimator.SetBool(HasMenuOffset, false);
+		hudAnimator.SetBool(IsHudVisible, true);
+		startMenuAnimator.SetTrigger(MenuFlyAway);
+		
+		Cursor.visible = false;
+		
+		yield return new WaitForSeconds(1.5f);
+
+		statsController.StartNextLevel();
 	}
 
 	#endregion
