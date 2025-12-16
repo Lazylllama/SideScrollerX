@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
@@ -135,6 +136,10 @@ public class UIController : MonoBehaviour {
 
 	public void ResumeGame() {
 		StartCoroutine(PauseRoutine(false));
+	}
+
+	public void RestartLevel() {
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
 	#endregion

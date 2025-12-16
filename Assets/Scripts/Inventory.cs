@@ -1,4 +1,4 @@
-using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 
 public class Inventory : MonoBehaviour {
@@ -32,8 +32,7 @@ public class Inventory : MonoBehaviour {
 		} else {
 			switch (collision.gameObject.tag) {
 				case "Coin":
-					CoinCollect(1);
-					Destroy(collision.gameObject);
+					StartCoroutine(CoinCollectRoutine(1, collision.gameObject));
 					break;
 				case "BombPickup":
 					BombCollect();
@@ -60,12 +59,7 @@ public class Inventory : MonoBehaviour {
 
 		uiController.UpdateUI();
 	}
-
-	private void CoinCollect(int amount) {
-		coins += amount;
-		uiController.UpdateUI();
-	}
-
+	
 	private void BombCollect() {
 		hasBomb = true;
 		uiController.UpdateUI();
@@ -85,5 +79,19 @@ public class Inventory : MonoBehaviour {
 		hasBomb = false;
 		uiController.UpdateUI();
 	}
+	#endregion
+
+	#region Routines
+
+	private IEnumerator CoinCollectRoutine(int amount, GameObject coin) {
+		coins += amount;
+		uiController.UpdateUI();
+		coin.GetComponentInChildren<Collider2D>().enabled = false;
+		coin.GetComponentInChildren<SpriteRenderer>().enabled = false;
+		coin.GetComponentInChildren<ParticleSystem>().Play();
+		yield return new WaitForSeconds(3f);
+		Destroy(coin);
+	}
+
 	#endregion
 }
