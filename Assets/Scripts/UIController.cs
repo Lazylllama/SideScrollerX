@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -9,15 +8,13 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
 	#region Fields
-
-	// UI Elements
+	
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
 	[SerializeField] private GameObject uiKeys;
 	[SerializeField] private GameObject uiCoins;
 	[SerializeField] private GameObject uiBomb;
-
-	// Ref
+	
 	[Header("Refs")]
 	[SerializeField] private Animator startMenuAnimator;
 	[SerializeField] private Animator hudAnimator;
@@ -32,7 +29,6 @@ public class UIController : MonoBehaviour {
 	// States
 	public bool isPaused;
 
-	// Prefabs
 	[Header("Prefabs")]
 	[SerializeField] private GameObject blueKeyUIPrefab;
 	[SerializeField] private GameObject redKeyUIPrefab;

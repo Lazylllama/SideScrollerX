@@ -64,7 +64,7 @@ public class Inventory : MonoBehaviour {
 		hasBomb = true;
 		uiController.UpdateUI();
 	}
-	
+
 	public void SpendKey(bool isRed) {
 		if (blueKeys > 0 && !isRed) {
 			blueKeys--;
@@ -79,6 +79,7 @@ public class Inventory : MonoBehaviour {
 		hasBomb = false;
 		uiController.UpdateUI();
 	}
+
 	#endregion
 
 	#region Routines
