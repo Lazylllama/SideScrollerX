@@ -8,11 +8,9 @@ public class SoftSpotScript : MonoBehaviour {
 	private static readonly int EnemyDie = Animator.StringToHash("enemyDie");
 
 	//* Refs
-	private EnemyController  enemyController;
-	private StatsController  statsController;
-	private PlayerController playerController;
-	private Animator         animator;
-	private BoxCollider2D    softSpotCollider;
+	private EnemyController enemyController;
+	private Animator        animator;
+	private BoxCollider2D   softSpotCollider;
 
 	#endregion
 
@@ -21,18 +19,14 @@ public class SoftSpotScript : MonoBehaviour {
 	private void Start() {
 		enemyController  = GetComponentInParent<EnemyController>();
 		animator         = GetComponentInParent<Animator>();
-		statsController  = FindAnyObjectByType<StatsController>();
-		playerController = FindAnyObjectByType<PlayerController>();
 		softSpotCollider = GetComponent<BoxCollider2D>();
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
-		if (!collision.gameObject.CompareTag("Player")) return;
-		if (playerController.isImmortal) return;
-
+		if (!collision.gameObject.CompareTag("Player") || PlayerController.Instance.isImmortal) return;
 		StartCoroutine(EnemyDieRoutine());
 		softSpotCollider.enabled = false;
-		statsController.RegisterKill();
+		StatsController.Instance.RegisterKill();
 	}
 
 	#endregion

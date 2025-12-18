@@ -1,10 +1,7 @@
-using System;
 using UnityEngine;
 
 public class BoomController : MonoBehaviour {
 	#region Fields
-
-	private StatsController statsController;
 
 	[SerializeField] private float forceMult = 1;
 
@@ -12,13 +9,9 @@ public class BoomController : MonoBehaviour {
 
 	#region Unity Functions
 
-	private void Start() {
-		statsController = FindAnyObjectByType<StatsController>();
-	}
-
 	private void OnCollisionEnter2D(Collision2D other) {
 		if (!other.gameObject.CompareTag("Player")) return;
-		statsController.DealDamage(1f, transform.position, forceMult);
+		StatsController.Instance.DealDamage(1f, transform.position, forceMult);
 	}
 
 	#endregion

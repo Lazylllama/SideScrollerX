@@ -8,23 +8,19 @@ public class LevelDoor : MonoBehaviour {
 	private static readonly int IsOpen = Animator.StringToHash("isOpen");
 
 	//* Refs
-	private Animator         animator;
-	private Inventory        inventory;
-	private UIController     uiController;
+	private Animator animator;
 
 	#endregion
 
 	#region Unity Functions
 
 	private void Start() {
-		animator         = GetComponent<Animator>();
-		inventory        = FindAnyObjectByType<Inventory>();
-		uiController     = FindAnyObjectByType<UIController>();
+		animator = GetComponent<Animator>();
 	}
 
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (!other.gameObject.CompareTag("Player")) return;
-		if (inventory.goldKeys > 1) return;
+		if (Inventory.Instance.goldKeys > 1) return;
 
 		StartCoroutine(OpenDoorRoutine());
 	}
@@ -34,10 +30,10 @@ public class LevelDoor : MonoBehaviour {
 	#region Routines
 
 	private IEnumerator OpenDoorRoutine() {
-		StartCoroutine(uiController.NextLevel());
-		
-		// TODO(@lazylllama): play door open sound
-		
+		StartCoroutine(UIController.Instance.NextLevel());
+
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.OpenDoor);
+
 		animator.SetBool(IsOpen, true);
 
 		yield return null;

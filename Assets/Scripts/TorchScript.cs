@@ -4,11 +4,11 @@ using UnityEngine;
 public class TorchScript : MonoBehaviour {
 	#region Fields
 
-	[Header("Refs")]
-	[SerializeField] private GameObject playerObject;
-	private PlayerController playerController;
-	private Animator         animator;
+	//* Instance
+	public static TorchScript Instance;
 
+	[Header("Refs")]
+	private Animator animator;
 
 	[Header("Torch Settings")]
 	[SerializeField] private float smoothing;
@@ -23,11 +23,19 @@ public class TorchScript : MonoBehaviour {
 
 	//? Set refs and default values
 	private void Start() {
-		playerController = FindAnyObjectByType<PlayerController>();
-		animator         = GetComponent<Animator>();
+		animator = GetComponent<Animator>();
 
 		//? Light up the torch on start
 		SetIsLit(true);
+	}
+
+	private void Awake() {
+		if (Instance != null && Instance != this) {
+			Destroy(gameObject);
+			return;
+		}
+
+		Instance = this;
 	}
 
 	//? Utilizes LateUpdate to ensure the player has moved first (looks very shit otherwise)
@@ -39,15 +47,15 @@ public class TorchScript : MonoBehaviour {
 
 	#region Functions
 
-	//? Set the torchs lit state, used in other scripts to turn it on/off
+	//? Set the torches lit state, used in other scripts to turn it on/off
 	public void SetIsLit(bool isLit) {
 		animator.SetBool(IsLit, isLit);
 	}
 
 	//? Make a lerp to the players position plus the offset
 	private void UpdatePosition() {
-		var playerPosWOffset = playerObject.transform.position +
-		                       new Vector3(playerController.isFacingRight ? offset.x : -offset.x, offset.y, 0);
+		var playerPosWOffset = PlayerController.Instance.gameObject.transform.position +
+		                       new Vector3(PlayerController.Instance.isFacingRight ? offset.x : -offset.x, offset.y, 0);
 
 		transform.position = Vector3.Lerp(transform.position, playerPosWOffset, smoothing * Time.deltaTime);
 	}

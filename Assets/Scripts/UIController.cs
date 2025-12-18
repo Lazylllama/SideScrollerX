@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -8,6 +9,9 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
 	#region Fields
+
+	//* Instance
+	public static UIController Instance;
 
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
@@ -21,12 +25,10 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private Animator pauseMenuAnimator;
 	[SerializeField] private Animator cmAnimator;
 
-	private StatsController statsController;
-	private Inventory       inventory;
 	private InputAction     pauseAction;
 	private TextMeshProUGUI uiCoinsText;
 
-	// States
+	//* States
 	public bool isPaused;
 
 	[Header("Prefabs")]
@@ -34,7 +36,7 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private GameObject redKeyUIPrefab;
 	[SerializeField] private GameObject goldKeyUIPrefab;
 
-	// Hashes
+	//* Hashes
 	private static readonly int IsPauseMenuVisible = Animator.StringToHash("isPauseMenuVisible");
 	private static readonly int IsHudVisible       = Animator.StringToHash("isHudVisible");
 	private static readonly int IsZoomedOut        = Animator.StringToHash("isZoomedOut");
@@ -46,11 +48,8 @@ public class UIController : MonoBehaviour {
 	#region Unity Functions
 
 	private void Start() {
-		// Find the scripts in the scene
-		statsController = FindAnyObjectByType<StatsController>();
-		inventory       = FindAnyObjectByType<Inventory>();
-		uiCoinsText     = uiCoins.GetComponentInChildren<TextMeshProUGUI>();
-
+		// Set Refs
+		uiCoinsText = uiCoins.GetComponentInChildren<TextMeshProUGUI>();
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
 		hudAnimator.SetBool(IsHudVisible, false);
@@ -59,6 +58,15 @@ public class UIController : MonoBehaviour {
 
 		// Update the UI at the start
 		UpdateUI();
+	}
+
+	private void Awake() {
+		if (Instance != null && Instance != this) {
+			Destroy(gameObject);
+			return;
+		}
+
+		Instance = this;
 	}
 
 	private void FixedUpdate() {
@@ -72,7 +80,7 @@ public class UIController : MonoBehaviour {
 	#region Functions
 
 	public void UpdateUI() {
-		var health    = statsController.health;
+		var health    = StatsController.Instance.health;
 		var totalKeys = 0;
 
 		// Health
@@ -82,8 +90,8 @@ public class UIController : MonoBehaviour {
 		}
 
 		// Inventory
-		uiCoinsText.text = inventory.coins.ToString() + "x";
-		uiBomb.SetActive(inventory.hasBomb);
+		uiCoinsText.text = Inventory.Instance.coins.ToString() + "x";
+		uiBomb.SetActive(Inventory.Instance.hasBomb);
 
 		// TODO(@lazylllama): Optimize and add animations for adding/removing keys (fly in/out of view), i just have no clue how yet without making it even more stupid
 		// Very inefficient to destroy and recreate every key every time, but works for now since the update frequency is low enough
@@ -91,7 +99,7 @@ public class UIController : MonoBehaviour {
 			Destroy(child.gameObject);
 		}
 
-		for (var i = 0; inventory.blueKeys > i; i++) {
+		for (var i = 0; Inventory.Instance.blueKeys > i; i++) {
 			var key = Instantiate(blueKeyUIPrefab, uiKeys.transform);
 
 			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
@@ -99,7 +107,7 @@ public class UIController : MonoBehaviour {
 			totalKeys++;
 		}
 
-		for (var i = 0; inventory.redKeys > i; i++) {
+		for (var i = 0; Inventory.Instance.redKeys > i; i++) {
 			var key = Instantiate(redKeyUIPrefab, uiKeys.transform);
 
 			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
@@ -107,7 +115,7 @@ public class UIController : MonoBehaviour {
 			totalKeys++;
 		}
 
-		for (var i = 0; inventory.goldKeys > i; i++) {
+		for (var i = 0; Inventory.Instance.goldKeys > i; i++) {
 			var key = Instantiate(goldKeyUIPrefab, uiKeys.transform);
 
 			key.GetComponent<RectTransform>().anchoredPosition -= new Vector2(40 * totalKeys, 0);
@@ -169,7 +177,7 @@ public class UIController : MonoBehaviour {
 	}
 
 	private IEnumerator StartLevelRoutine() {
-		if (!statsController.LevelPause) yield break;
+		if (!StatsController.Instance.LevelPause) yield break;
 
 		cmAnimator.SetBool(HasMenuOffset, false);
 		hudAnimator.SetBool(IsHudVisible, true);
@@ -179,7 +187,7 @@ public class UIController : MonoBehaviour {
 
 		yield return new WaitForSeconds(1.5f);
 
-		statsController.StartNextLevel();
+		StatsController.Instance.StartNextLevel();
 	}
 
 	#endregion

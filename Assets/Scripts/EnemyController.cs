@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class EnemyController : MonoBehaviour {
 	#region Fields
@@ -13,17 +11,16 @@ public class EnemyController : MonoBehaviour {
 	[SerializeField] private float checkDistance;
 	[SerializeField] private float speed;
 	[SerializeField] private float damageAmount;
-	[SerializeField] public bool  isFlyingEnemy;
+	[SerializeField] public  bool  isFlyingEnemy;
 
 	[Header("REFS")]
 	[SerializeField] private Transform lookCheck;
-	[SerializeField] private Transform   groundCheck;
-	[SerializeField] private LayerMask   groundLayer;
-	[SerializeField] private GameObject  pointL,     pointR;
+	[SerializeField] private Transform  groundCheck;
+	[SerializeField] private LayerMask  groundLayer;
+	[SerializeField] private GameObject pointL, pointR;
 
-	private Rigidbody2D     rb;
-	private StatsController statsController;
-	private Animator        animator;
+	private Rigidbody2D rb;
+	private Animator    animator;
 
 	//* Hashes
 	private static readonly int IsWalking  = Animator.StringToHash("isWalking");
@@ -34,16 +31,15 @@ public class EnemyController : MonoBehaviour {
 	#region Unity Functions
 
 	private void Start() {
-		rb              = GetComponent<Rigidbody2D>();
-		statsController = FindAnyObjectByType<StatsController>();
-		animator        = GetComponent<Animator>();
-		
+		rb       = GetComponent<Rigidbody2D>();
+		animator = GetComponent<Animator>();
+
 		animator.SetBool(IsFloating, isFlyingEnemy);
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
 		if (collision.gameObject.CompareTag("Player") && !isDead) {
-			statsController.DealDamage(damageAmount, transform.position);
+			StatsController.Instance.DealDamage(damageAmount, transform.position);
 		}
 	}
 
@@ -87,16 +83,10 @@ public class EnemyController : MonoBehaviour {
 		rb.linearVelocityX = transform.right.x * speed;
 
 		if (isDead) return;
-		if (rb.linearVelocityX == 0) {
-			animator.SetBool(IsWalking, false);
-		} else {
-			animator.SetBool(IsWalking, true);
-		}
+		animator.SetBool(IsWalking, rb.linearVelocityX != 0);
 	}
 
-	public void EnemyDie() {
-		isDead = true;
-	}
-
+	public void EnemyDie() => isDead = true;
+		
 	#endregion
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 public class StatsController : MonoBehaviour {
 	#region Fields
 
+	//* Instance
+	public static StatsController Instance;
+
 	//* Stats
 	public  bool levelPlaying;
 	public  int  level;
@@ -13,11 +16,6 @@ public class StatsController : MonoBehaviour {
 	public float maxHealth = 3;
 	public bool  LevelPause => (health <= 0) || !levelPlaying;
 
-	//* Ref
-	private UIController     uiController;
-	private TorchScript      torchScript;
-	private PlayerController playerController;
-	
 	//* Timers
 	private float lowHpWarnTimer;
 
@@ -28,11 +26,16 @@ public class StatsController : MonoBehaviour {
 	private void Start() {
 		health = maxHealth;
 
-		uiController     = FindAnyObjectByType<UIController>();
-		torchScript      = FindAnyObjectByType<TorchScript>();
-		playerController = FindAnyObjectByType<PlayerController>();
+		UIController.Instance.UpdateUI();
+	}
+	
+	private void Awake() {
+		if (Instance != null && Instance != this) {
+			Destroy(gameObject);
+			return;
+		}
 
-		uiController.UpdateUI();
+		Instance = this;
 	}
 
 	private void FixedUpdate() {
@@ -41,7 +44,7 @@ public class StatsController : MonoBehaviour {
 		if (lowHpWarnTimer > 0) return;
 
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.LowHealthWarn);
-		
+
 		lowHpWarnTimer = 2f;
 	}
 
@@ -57,34 +60,32 @@ public class StatsController : MonoBehaviour {
 
 	public void DealDamage(float damageAmount, Vector3 sourcePosition, float forceMult = 1f) {
 		// If immune or level paused, do nothing
-		if (playerController.isImmortal || LevelPause) {
+		if (PlayerController.Instance.isImmortal || LevelPause) {
 			return;
 		}
 
 		// Deal damage and apply knockback
 		health -= damageAmount;
-		playerController.DamageKnockback(sourcePosition, forceMult);
+		PlayerController.Instance.DamageKnockback(sourcePosition, forceMult);
 
 		if (health <= 0) {
-			torchScript.SetIsLit(false);
+			TorchScript.Instance.SetIsLit(false);
 			AudioManager.Instance.PlaySfx(sourcePosition.y < -10
 				                              ? AudioManager.AudioName.PlayerFallDie
 				                              : AudioManager.AudioName.PlayerDie);
 		} else {
 			// Apply immortality
-			playerController.PlayerImmortal(1.25f);
+			PlayerController.Instance.PlayerImmortal(1.25f);
 			AudioManager.Instance.PlaySfx(AudioManager.AudioName.PlayerHurt);
 		}
 
 		// Update UI
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 	}
 
-	public void RegisterKill() {
-		// Register immunity for 0.2 seconds after a kill
-		// To avoid bad problems with cramming or whatever might happen
-		playerController.PlayerImmortal(0.2f);
-	}
+	// Register immunity for 0.2 seconds after a kill
+	// To avoid bad problems with cramming or whatever might happen
+	public void RegisterKill() => PlayerController.Instance.PlayerImmortal(0.2f);
 
 	#endregion
 }

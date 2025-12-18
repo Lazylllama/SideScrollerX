@@ -4,6 +4,9 @@ using UnityEngine;
 public class Inventory : MonoBehaviour {
 	#region Fields
 
+	// Instance
+	public static Inventory Instance;
+
 	[Header("Inventory Stats")]
 	public int blueKeys;
 	public int  redKeys;
@@ -11,15 +14,17 @@ public class Inventory : MonoBehaviour {
 	public int  coins;
 	public bool hasBomb;
 
-	// Ref
-	private UIController uiController;
-
 	#endregion
 
 	#region Unity Functions
 
-	private void Start() {
-		uiController = FindAnyObjectByType<UIController>();
+	private void Awake() {
+		if (Instance != null && Instance != this) {
+			Destroy(gameObject);
+			return;
+		}
+
+		Instance = this;
 	}
 
 	#endregion
@@ -60,12 +65,12 @@ public class Inventory : MonoBehaviour {
 				break;
 		}
 
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 	}
 
 	private void BombCollect() {
 		hasBomb = true;
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CollectItem);
 	}
 
@@ -77,13 +82,12 @@ public class Inventory : MonoBehaviour {
 		} else return;
 
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.UseKey);
-
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 	}
 
 	public void UseBomb() {
 		hasBomb = false;
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 	}
 
 	#endregion
@@ -92,7 +96,7 @@ public class Inventory : MonoBehaviour {
 
 	private IEnumerator CoinCollectRoutine(int amount, GameObject coin) {
 		coins += amount;
-		uiController.UpdateUI();
+		UIController.Instance.UpdateUI();
 		coin.GetComponentInChildren<Collider2D>().enabled     = false;
 		coin.GetComponentInChildren<SpriteRenderer>().enabled = false;
 		coin.GetComponentInChildren<ParticleSystem>().Play();

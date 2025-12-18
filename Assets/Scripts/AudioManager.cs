@@ -28,6 +28,7 @@ public class AudioManager : MonoBehaviour {
 		CursorPress,      //15
 		ThrowBomb,        //16
 		BirdCallEnd,      //17
+		OpenDoor,         //18
 	};
 
 	private readonly Dictionary<AudioName, AudioClip> audioClips = new();

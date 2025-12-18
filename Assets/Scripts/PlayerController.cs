@@ -6,17 +6,18 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour {
 	#region Fields
 
+	//* Instance
+	public static PlayerController Instance;
+
 	//* Hashes
 	private static readonly int IsRunning  = Animator.StringToHash("isRunning");
 	private static readonly int IsGrounded = Animator.StringToHash("isGrounded");
 	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	//* Refs
-	private InputAction     jumpAction, moveAction, bombAction;
-	private BoxCollider2D   playerEnemyCollider;
-	private Rigidbody2D     playerRigidbody;
-	private StatsController statsController;
-	private Inventory       inventory;
+	private InputAction   jumpAction, moveAction, bombAction;
+	private BoxCollider2D playerEnemyCollider;
+	private Rigidbody2D   playerRigidbody;
 
 	[Header("Player Stats")]
 	[SerializeField] private float playerSpeed;
@@ -68,8 +69,6 @@ public class PlayerController : MonoBehaviour {
 		playerImpulseSource = GetComponent<CinemachineImpulseSource>();
 		playerSprite        = GetComponentInChildren<SpriteRenderer>();
 		playerEnemyCollider = GetComponentInChildren<BoxCollider2D>();
-		statsController     = FindAnyObjectByType<StatsController>();
-		inventory           = FindAnyObjectByType<Inventory>();
 
 		// TODO(@lazylllama): Clean this up later
 		//? Find the other animator and set it as the player sprite animator
@@ -80,6 +79,15 @@ public class PlayerController : MonoBehaviour {
 		}
 
 		isFacingRight = true;
+	}
+	
+	private void Awake() {
+		if (Instance != null && Instance != this) {
+			Destroy(gameObject);
+			return;
+		}
+
+		Instance = this;
 	}
 
 	private void Update() {
@@ -94,7 +102,7 @@ public class PlayerController : MonoBehaviour {
 
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
-		statsController.DealDamage(3f, transform.position);
+		StatsController.Instance.DealDamage(3f, transform.position);
 	}
 
 	#endregion
@@ -102,7 +110,7 @@ public class PlayerController : MonoBehaviour {
 	#region Movement Functions
 
 	private void MoveCheck() {
-		if (statsController.LevelPause) return;
+		if (StatsController.Instance.LevelPause) return;
 		moveInput = moveAction.ReadValue<Vector2>();
 
 		if (inKnockback) return;
@@ -130,7 +138,7 @@ public class PlayerController : MonoBehaviour {
 	private void PerformMove() {
 		if (inKnockback) return;
 
-		if (statsController.LevelPause) {
+		if (StatsController.Instance.LevelPause) {
 			playerSpriteAnimator.SetBool(IsRunning, false);
 			playerRigidbody.linearVelocityX = 0;
 			return;
@@ -185,9 +193,12 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void ActionCheck() {
-		if (statsController.LevelPause || !bombAction.WasPressedThisFrame() || !inventory.hasBomb) return;
-		inventory.UseBomb();
+		if (!bombAction.WasPressedThisFrame() ||
+		    !Inventory.Instance.hasBomb       ||
+		    StatsController.Instance.LevelPause) return;
+
 		Instantiate(bombPrefab, transform.position, Quaternion.identity);
+		Inventory.Instance.UseBomb();
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.ThrowBomb);
 	}
 
