@@ -42,6 +42,9 @@ public class SoftSpotScript : MonoBehaviour {
 	private IEnumerator EnemyDieRoutine() {
 		enemyController.EnemyDie();
 		animator.SetTrigger(EnemyDie);
+		AudioManager.Instance.PlaySfx(enemyController.isFlyingEnemy
+			                              ? AudioManager.AudioName.BeeDie
+			                              : AudioManager.AudioName.BlobDie);
 		yield return new WaitForSeconds(1.5f);
 		Destroy(enemyController.gameObject);
 	}

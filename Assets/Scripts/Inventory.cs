@@ -48,21 +48,25 @@ public class Inventory : MonoBehaviour {
 		switch (type) {
 			case "BlueKey":
 				blueKeys++;
+				AudioManager.Instance.PlaySfx(AudioManager.AudioName.CollectItem);
 				break;
 			case "RedKey":
 				redKeys++;
+				AudioManager.Instance.PlaySfx(AudioManager.AudioName.CollectItem);
 				break;
 			case "GoldKey":
 				goldKeys++;
+				AudioManager.Instance.PlaySfx(AudioManager.AudioName.GoldenKeyCollect);
 				break;
 		}
 
 		uiController.UpdateUI();
 	}
-	
+
 	private void BombCollect() {
 		hasBomb = true;
 		uiController.UpdateUI();
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CollectItem);
 	}
 
 	public void SpendKey(bool isRed) {
@@ -70,7 +74,9 @@ public class Inventory : MonoBehaviour {
 			blueKeys--;
 		} else if (redKeys > 0 && isRed) {
 			redKeys--;
-		}
+		} else return;
+
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.UseKey);
 
 		uiController.UpdateUI();
 	}
@@ -87,9 +93,10 @@ public class Inventory : MonoBehaviour {
 	private IEnumerator CoinCollectRoutine(int amount, GameObject coin) {
 		coins += amount;
 		uiController.UpdateUI();
-		coin.GetComponentInChildren<Collider2D>().enabled = false;
+		coin.GetComponentInChildren<Collider2D>().enabled     = false;
 		coin.GetComponentInChildren<SpriteRenderer>().enabled = false;
 		coin.GetComponentInChildren<ParticleSystem>().Play();
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CoinCollect);
 		yield return new WaitForSeconds(3f);
 		Destroy(coin);
 	}

@@ -30,10 +30,10 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	[SerializeField] private float     groundCheckRadius;
-	private                   bool      isGrounded;
-	private                   bool      inKnockback;
-	private                   bool      isCoyoteTimeActive;
-	private                   bool      hasCoyoteJumped;
+	private                  bool      isGrounded;
+	private                  bool      inKnockback;
+	private                  bool      isCoyoteTimeActive;
+	private                  bool      hasCoyoteJumped;
 
 	[Header("Animation")]
 	public bool isFacingRight;
@@ -185,11 +185,10 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void ActionCheck() {
-		if (statsController.LevelPause) return;
-		if (bombAction.WasPressedThisFrame() && inventory.hasBomb) {
-			inventory.UseBomb();
-			Instantiate(bombPrefab, transform.position, Quaternion.identity);
-		}
+		if (statsController.LevelPause || !bombAction.WasPressedThisFrame() || !inventory.hasBomb) return;
+		inventory.UseBomb();
+		Instantiate(bombPrefab, transform.position, Quaternion.identity);
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.ThrowBomb);
 	}
 
 	#endregion

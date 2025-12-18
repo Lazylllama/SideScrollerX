@@ -8,13 +8,13 @@ using UnityEngine.UI;
 
 public class UIController : MonoBehaviour {
 	#region Fields
-	
+
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
 	[SerializeField] private GameObject uiKeys;
 	[SerializeField] private GameObject uiCoins;
 	[SerializeField] private GameObject uiBomb;
-	
+
 	[Header("Refs")]
 	[SerializeField] private Animator startMenuAnimator;
 	[SerializeField] private Animator hudAnimator;
@@ -138,6 +138,10 @@ public class UIController : MonoBehaviour {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
+	public void ClickSound() {
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CursorPress);
+	}
+
 	#endregion
 
 	#region Routines
@@ -145,6 +149,9 @@ public class UIController : MonoBehaviour {
 	private IEnumerator PauseRoutine(bool pauseState) {
 		isPaused = pauseState;
 
+		AudioManager.Instance.PlaySfx(pauseState
+			                              ? AudioManager.AudioName.PauseOpen
+			                              : AudioManager.AudioName.PauseClose);
 		hudAnimator.SetBool(IsHudVisible, !isPaused);
 		pauseMenuAnimator.SetBool(IsPauseMenuVisible, isPaused);
 
@@ -167,9 +174,9 @@ public class UIController : MonoBehaviour {
 		cmAnimator.SetBool(HasMenuOffset, false);
 		hudAnimator.SetBool(IsHudVisible, true);
 		startMenuAnimator.SetTrigger(MenuFlyAway);
-		
+
 		Cursor.visible = false;
-		
+
 		yield return new WaitForSeconds(1.5f);
 
 		statsController.StartNextLevel();

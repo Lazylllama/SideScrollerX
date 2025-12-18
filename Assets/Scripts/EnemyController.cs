@@ -13,7 +13,7 @@ public class EnemyController : MonoBehaviour {
 	[SerializeField] private float checkDistance;
 	[SerializeField] private float speed;
 	[SerializeField] private float damageAmount;
-	[SerializeField] private bool  isFlyingEnemy;
+	[SerializeField] public bool  isFlyingEnemy;
 
 	[Header("REFS")]
 	[SerializeField] private Transform lookCheck;

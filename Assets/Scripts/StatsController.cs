@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class StatsController : MonoBehaviour {
@@ -10,12 +11,15 @@ public class StatsController : MonoBehaviour {
 
 	public float health;
 	public float maxHealth = 3;
-	public bool  LevelPause => (health <= 0)  || !levelPlaying;
+	public bool  LevelPause => (health <= 0) || !levelPlaying;
 
 	//* Ref
 	private UIController     uiController;
 	private TorchScript      torchScript;
 	private PlayerController playerController;
+	
+	//* Timers
+	private float lowHpWarnTimer;
 
 	#endregion
 
@@ -31,11 +35,22 @@ public class StatsController : MonoBehaviour {
 		uiController.UpdateUI();
 	}
 
+	private void FixedUpdate() {
+		if (LevelPause || health > 1) return;
+		lowHpWarnTimer -= Time.deltaTime;
+		if (lowHpWarnTimer > 0) return;
+
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.LowHealthWarn);
+		
+		lowHpWarnTimer = 2f;
+	}
+
 	#endregion
 
 	#region Functions
 
 	public void StartNextLevel() {
+		if (level == levelMax) return;
 		levelPlaying =  true;
 		level        += 1;
 	}
@@ -52,9 +67,13 @@ public class StatsController : MonoBehaviour {
 
 		if (health <= 0) {
 			torchScript.SetIsLit(false);
+			AudioManager.Instance.PlaySfx(sourcePosition.y < -10
+				                              ? AudioManager.AudioName.PlayerFallDie
+				                              : AudioManager.AudioName.PlayerDie);
 		} else {
 			// Apply immortality
 			playerController.PlayerImmortal(1.25f);
+			AudioManager.Instance.PlaySfx(AudioManager.AudioName.PlayerHurt);
 		}
 
 		// Update UI

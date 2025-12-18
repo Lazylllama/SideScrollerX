@@ -61,6 +61,7 @@ public class Bomb : MonoBehaviour {
 
 		animator.SetTrigger(BombBoom);
 		impulseSource.GenerateImpulse();
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.Explosion);
 
 		yield return new WaitForSeconds(0.25f);
 
