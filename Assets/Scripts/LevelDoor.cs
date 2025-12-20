@@ -32,11 +32,11 @@ public class LevelDoor : MonoBehaviour {
 	private IEnumerator OpenDoorRoutine() {
 		StartCoroutine(UIController.Instance.NextLevel());
 
-		AudioManager.Instance.PlaySfx(AudioManager.AudioName.OpenDoor);
-
 		animator.SetBool(IsOpen, true);
-
-		yield return null;
+		
+		yield return new WaitForSeconds(1f);
+		
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.OpenDoor);
 	}
 
 	#endregion

@@ -428,7 +428,7 @@ CircleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5b7dd70aa280d45489e0dbd248d29c03, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -570,7 +570,7 @@ CircleCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 63df998fa0391fb4ab6ba2e66f69af20, type: 2}
+  m_Material: {fileID: 6200000, guid: ba23e4111fddc60479a9af7d3caf05cb, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -612,7 +612,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 7
-  m_Material: {fileID: 6200000, guid: 63df998fa0391fb4ab6ba2e66f69af20, type: 2}
+  m_Material: {fileID: 6200000, guid: ba23e4111fddc60479a9af7d3caf05cb, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

@@ -8,12 +8,11 @@ public class StatsController : MonoBehaviour {
 	public static StatsController Instance;
 
 	//* Stats
-	public  bool levelPlaying;
-	public  int  level;
-	private int  levelMax = 5;
+	[SerializeField] private int  levelMax = 5;
+	public                   bool levelPlaying;
+	public                   int  level;
 
 	public float health;
-	public float maxHealth = 3;
 	public bool  LevelPause => (health <= 0) || !levelPlaying;
 
 	//* Timers
@@ -24,11 +23,10 @@ public class StatsController : MonoBehaviour {
 	#region Unity Functions
 
 	private void Start() {
-		health = maxHealth;
-
+		health = 3;
 		UIController.Instance.UpdateUI();
 	}
-	
+
 	private void Awake() {
 		if (Instance != null && Instance != this) {
 			Destroy(gameObject);
@@ -52,12 +50,19 @@ public class StatsController : MonoBehaviour {
 
 	#region Functions
 
+	/// Go to the next level
 	public void StartNextLevel() {
 		if (level == levelMax) return;
 		levelPlaying =  true;
 		level        += 1;
 	}
 
+	/// <summary>
+	/// Deal damage to the player
+	/// </summary>
+	/// <param name="damageAmount">HP to remove</param>
+	/// <param name="sourcePosition">Position of the damage source</param>
+	/// <param name="forceMult">1 by default, 0 to ignore knockback.</param>
 	public void DealDamage(float damageAmount, Vector3 sourcePosition, float forceMult = 1f) {
 		// If immune or level paused, do nothing
 		if (PlayerController.Instance.isImmortal || LevelPause) {
@@ -83,7 +88,7 @@ public class StatsController : MonoBehaviour {
 		UIController.Instance.UpdateUI();
 	}
 
-	// Register immunity for 0.2 seconds after a kill
+	/// Register immunity for 0.2 seconds after a kill
 	// To avoid bad problems with cramming or whatever might happen
 	public void RegisterKill() => PlayerController.Instance.PlayerImmortal(0.2f);
 

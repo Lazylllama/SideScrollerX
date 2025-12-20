@@ -24,8 +24,10 @@ public class SoftSpotScript : MonoBehaviour {
 
 	private void OnCollisionEnter2D(Collision2D collision) {
 		if (!collision.gameObject.CompareTag("Player") || PlayerController.Instance.isImmortal) return;
-		StartCoroutine(EnemyDieRoutine());
+		
 		softSpotCollider.enabled = false;
+
+		StartCoroutine(EnemyDieRoutine());
 		StatsController.Instance.RegisterKill();
 	}
 
@@ -36,10 +38,13 @@ public class SoftSpotScript : MonoBehaviour {
 	private IEnumerator EnemyDieRoutine() {
 		enemyController.EnemyDie();
 		animator.SetTrigger(EnemyDie);
+		
 		AudioManager.Instance.PlaySfx(enemyController.isFlyingEnemy
 			                              ? AudioManager.AudioName.BeeDie
 			                              : AudioManager.AudioName.BlobDie);
+		
 		yield return new WaitForSeconds(1.5f);
+		
 		Destroy(enemyController.gameObject);
 	}
 

@@ -20,12 +20,10 @@ public class TorchScript : MonoBehaviour {
 	#endregion
 
 	#region Unity Functions
-
-	//? Set refs and default values
+	
 	private void Start() {
 		animator = GetComponent<Animator>();
 
-		//? Light up the torch on start
 		SetIsLit(true);
 	}
 
@@ -47,7 +45,10 @@ public class TorchScript : MonoBehaviour {
 
 	#region Functions
 
-	//? Set the torches lit state, used in other scripts to turn it on/off
+	/// <summary>
+	/// Sets the players torch to be lit or not
+	/// </summary>
+	/// <param name="isLit">true = torch is lit</param>
 	public void SetIsLit(bool isLit) {
 		animator.SetBool(IsLit, isLit);
 	}

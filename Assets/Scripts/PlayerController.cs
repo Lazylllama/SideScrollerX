@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float playerSpeed;
 	[SerializeField] private float jumpForce;
 	[SerializeField] private float extraJumpForce;
+	[SerializeField] private float extraJumpTime;
 	[SerializeField] private float knockBackPower;
 	[SerializeField] private float coyoteTime;
 	public                   bool  isImmortal;
@@ -47,8 +48,8 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private GameObject bombPrefab;
 
 	//* Timer
-	private float jumpTimer;
-	private float jumpingTimer;
+	private float jumpCooldown;
+	private float jumpPowerTimer;
 
 	//* States
 	private Vector2 moveInput;
@@ -80,7 +81,7 @@ public class PlayerController : MonoBehaviour {
 
 		isFacingRight = true;
 	}
-	
+
 	private void Awake() {
 		if (Instance != null && Instance != this) {
 			Destroy(gameObject);
@@ -92,11 +93,14 @@ public class PlayerController : MonoBehaviour {
 
 	private void Update() {
 		GroundCheck();
+
+		jumpCooldown += Time.deltaTime;
 	}
 
 	private void FixedUpdate() {
 		MoveCheck();
 		PerformMove();
+
 		ActionCheck();
 	}
 
@@ -114,9 +118,6 @@ public class PlayerController : MonoBehaviour {
 		moveInput = moveAction.ReadValue<Vector2>();
 
 		if (inKnockback) return;
-
-		jumpTimer += Time.deltaTime;
-
 
 		switch (moveInput.x) {
 			// If move input is negative, the player is looking left.
@@ -149,22 +150,19 @@ public class PlayerController : MonoBehaviour {
 		playerRigidbody.linearVelocityX = moveInput.x * playerSpeed;
 	}
 
-	//? If jumped in past 0.1 seconds => return
-	//? If grounded => Let player jump and reset timers
-	//? If not grounded, held space and jumped within 0.6 sec => add extra jump force
 	// TODO(@lazylllama): Rework function to make it more optimized and simple
 	private void PerformJump(bool thisFrame) {
-		jumpingTimer += Time.deltaTime;
-		if (jumpTimer < 0.1f) return;
-
 		switch (isGrounded) {
-			case false when !thisFrame && jumpingTimer < 0.2f:
-				playerRigidbody.AddForce(Vector2.up * extraJumpForce, ForceMode2D.Impulse);
-				hasCoyoteJumped = true;
+			case false when hasCoyoteJumped && jumpPowerTimer > 0f:
+				playerRigidbody.AddForce(Vector2.up * (jumpForce * Time.fixedDeltaTime * extraJumpForce),
+				                         ForceMode2D.Impulse);
+				jumpPowerTimer -= Time.fixedDeltaTime;
 				break;
-			case false when thisFrame && isCoyoteTimeActive && !hasCoyoteJumped:
+			case false when !hasCoyoteJumped && isCoyoteTimeActive:
 			case true:
+				if (jumpCooldown < 0.3f) return;
 				playerRigidbody.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+				hasCoyoteJumped = true;
 				ResetJump();
 				break;
 		}
@@ -172,13 +170,15 @@ public class PlayerController : MonoBehaviour {
 		return;
 
 		void ResetJump() {
-			jumpingTimer    = 0;
-			jumpTimer       = 0;
-			hasCoyoteJumped = true;
+			// Only reset the jump if the player is grounded
+			if (!isGrounded) return;
+			jumpCooldown   = 0f;
+			jumpPowerTimer = extraJumpTime;
 		}
 	}
 
 	private void GroundCheck() {
+		if (jumpCooldown < 0.1f) return;
 		var hit = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
 
 		if (hit) {

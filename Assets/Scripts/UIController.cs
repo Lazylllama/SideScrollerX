@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -48,6 +47,10 @@ public class UIController : MonoBehaviour {
 	#region Unity Functions
 
 	private void Start() {
+		// Ensure time is normal and the cursor is visible at the start
+		Time.timeScale = 1f;
+		Cursor.visible = true;
+		
 		// Set Refs
 		uiCoinsText = uiCoins.GetComponentInChildren<TextMeshProUGUI>();
 		pauseAction = InputSystem.actions.FindAction("Pause");
@@ -78,7 +81,8 @@ public class UIController : MonoBehaviour {
 	#endregion
 
 	#region Functions
-
+	
+	/// Refreshes the UI with the current stats
 	public void UpdateUI() {
 		var health    = StatsController.Instance.health;
 		var totalKeys = 0;
@@ -123,29 +127,35 @@ public class UIController : MonoBehaviour {
 			totalKeys++;
 		}
 	}
-
+	
+	/// Starts the level
 	public void StartLevel() {
 		StartCoroutine(StartLevelRoutine());
 	}
-
+	
+	/// Exits the game completely
 	public void ExitGame() {
 		Application.Quit();
 	}
 
 
 	//* Pause Menu Functions
+	/// Exits to the main menu
 	public void ExitToMenu() {
 		cmAnimator.SetBool(IsZoomedOut, isPaused);
 	}
-
+	
+	/// Resumes the game from the paused state
 	public void ResumeGame() {
 		StartCoroutine(PauseRoutine(false));
 	}
-
+	
+	/// Restarts the current scene/level
 	public void RestartLevel() {
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
-
+	
+	/// Plays a sound effect for clicking on UI elements
 	public void ClickSound() {
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CursorPress);
 	}
