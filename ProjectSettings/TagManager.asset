@@ -65,6 +65,9 @@ TagManager:
   - name: Clouds - 4
     uniqueID: 460723909
     locked: 0
+  - name: Elevator Chains
+    uniqueID: 3154448259
+    locked: 0
   - name: Objects
     uniqueID: 3551685389
     locked: 0
