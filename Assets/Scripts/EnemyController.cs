@@ -86,6 +86,9 @@ public class EnemyController : MonoBehaviour {
 		animator.SetBool(IsWalking, rb.linearVelocityX != 0);
 	}
 
+	/// <summary>
+	/// Kill the enemy :)
+	/// </summary>
 	public void EnemyDie() => isDead = true;
 		
 	#endregion

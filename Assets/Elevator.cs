@@ -1,21 +1,22 @@
 using UnityEngine;
 
 public class Elevator : MonoBehaviour {
-	//* Hashes
-	//private static readonly int IsActive = Animator.StringToHash("isActive");
-
 	//* Options
 	[SerializeField] private float speed;
 
 	//* Refs
+	[SerializeField] private GameObject    platform;
 	[SerializeField] private GameObject    pointA, pointB;
-	private                  Animator      animator;
+	private                  ElevatorLever lever;
 
 	private void Start() {
-		animator = GetComponent<Animator>();
-
-		//animator.SetBool(IsActive, true);
+		lever = GetComponentInChildren<ElevatorLever>();
 	}
 
-	//public void ElevatorSetActive(bool isActive) => animator.SetBool(IsActive, isActive);
+	private void FixedUpdate() {
+		platform.transform.position = Vector2.MoveTowards(platform.transform.position,
+		                                                  lever.leverState
+			                                                  ? pointB.transform.position
+			                                                  : pointA.transform.position, speed * Time.deltaTime);
+	}
 }

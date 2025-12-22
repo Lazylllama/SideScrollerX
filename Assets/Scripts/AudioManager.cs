@@ -4,10 +4,11 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour {
 	#region Fields
 
-	public static AudioManager Instance;
-
+	public static           AudioManager    Instance;
+	
+	//? Clip list public to be able to get the length of a clip in other scripts
+	[SerializeField] public List<AudioClip> audioClipList;
 	[SerializeField] private AudioSource     sfxSource;
-	[SerializeField] private List<AudioClip> audioClipList;
 
 	public enum AudioName {
 		CoinCollect,      //0
@@ -54,7 +55,11 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-	/// Plays a sound effect by its enum name
+	/// <summary>
+	/// Plays a sound effect
+	/// </summary>
+	/// <param name="audioName">Audio Clip Name - AudioManager.AudioName[]</param>
+	/// <param name="volume">Sound Volume - 0 to 1 (float)</param>
 	public void PlaySfx(AudioName audioName, float volume = 1f) {
 		if (audioClips.TryGetValue(audioName, out var clip)) {
 			sfxSource.PlayOneShot(clip, volume);

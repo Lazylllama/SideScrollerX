@@ -15,32 +15,23 @@ public class PlayerController : MonoBehaviour {
 	private static readonly int TakeDamage = Animator.StringToHash("takeDamage");
 
 	//* Refs
-	private InputAction   jumpAction, moveAction, bombAction;
+	private InputAction   jumpAction, moveAction, secondaryInteractAction;
 	private BoxCollider2D playerEnemyCollider;
 	private Rigidbody2D   playerRigidbody;
 
 	[Header("Player Stats")]
-	[SerializeField] private float playerSpeed;
-	[SerializeField] private float jumpForce;
-	[SerializeField] private float extraJumpForce;
-	[SerializeField] private float extraJumpTime;
-	[SerializeField] private float knockBackPower;
-	[SerializeField] private float coyoteTime;
-	public                   bool  isImmortal;
+	public bool isImmortal;
+	[SerializeField] private float jumpForce, extraJumpForce, extraJumpTime, knockBackPower, coyoteTime, playerSpeed;
 
 	[Header("Ground Check")]
 	[SerializeField] private Transform groundCheckPosition;
 	[SerializeField] private LayerMask groundLayer;
 	[SerializeField] private float     groundCheckRadius;
-	private                  bool      isGrounded;
-	private                  bool      inKnockback;
-	private                  bool      isCoyoteTimeActive;
-	private                  bool      hasCoyoteJumped;
+	private                  bool      isGrounded, inKnockback, isCoyoteTimeActive, hasCoyoteJumped;
 
 	[Header("Animation")]
 	public bool isFacingRight;
-	private Animator                 playerSpriteAnimator;
-	private Animator                 playerAnimator;
+	private Animator                 playerSpriteAnimator, playerAnimator;
 	private SpriteRenderer           playerSprite;
 	private CinemachineImpulseSource playerImpulseSource;
 
@@ -60,9 +51,9 @@ public class PlayerController : MonoBehaviour {
 
 	private void Start() {
 		playerRigidbody = GetComponent<Rigidbody2D>();
-		moveAction      = InputSystem.actions.FindAction("Move");     // Primarily A & D and arrow keys left & right
-		jumpAction      = InputSystem.actions.FindAction("Jump");     // Primarily Space & W and arrow keys up & down
-		bombAction      = InputSystem.actions.FindAction("Interact"); // Primarily E key
+		moveAction = InputSystem.actions.FindAction("Move"); // Primarily A & D and arrow keys left & right
+		jumpAction = InputSystem.actions.FindAction("Jump"); // Primarily Space & W and arrow keys up & down
+		secondaryInteractAction = InputSystem.actions.FindAction("SecondaryInteract"); // Primarily Q key
 
 		var playerAnimators = GetComponentsInChildren<Animator>();
 
@@ -193,8 +184,8 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void ActionCheck() {
-		if (!bombAction.WasPressedThisFrame() ||
-		    !Inventory.Instance.hasBomb       ||
+		if (!secondaryInteractAction.WasPressedThisFrame() ||
+		    !Inventory.Instance.hasBomb                    ||
 		    StatsController.Instance.LevelPause) return;
 
 		Instantiate(bombPrefab, transform.position, Quaternion.identity);
@@ -206,10 +197,19 @@ public class PlayerController : MonoBehaviour {
 
 	#region Coroutines
 
+	/// <summary>
+	/// Makes the player immortal for a certain duration
+	/// </summary>
+	/// <param name="duration">Immortality duration in seconds</param>
 	public void PlayerImmortal(float duration) {
 		StartCoroutine((ImmortalityRoutine(duration)));
 	}
 
+	/// <summary>
+	/// Damages the player and applies knockback from an enemy position
+	/// </summary>
+	/// <param name="enemyPosition">Vector3 position of the damage source</param>
+	/// <param name="forceMult">Intensiveness of the knockback.</param>
 	public void DamageKnockback(Vector3 enemyPosition, float forceMult = 1f) {
 		playerSpriteAnimator.SetTrigger(TakeDamage);
 		playerAnimator.SetTrigger(TakeDamage);
@@ -220,7 +220,8 @@ public class PlayerController : MonoBehaviour {
 		inKnockback = true;
 
 		//? Camera shake
-		playerImpulseSource.GenerateImpulseWithForce(0.6f);
+		//* Only shake the camera if the forceMult > 0
+		playerImpulseSource.GenerateImpulseWithForce(forceMult > 0 ? 0.6f : 0f);
 
 		//? Push the player in the opposite way of the enemy direction
 		var knockBackDirection = (transform.position - enemyPosition).normalized;

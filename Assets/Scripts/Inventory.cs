@@ -74,6 +74,10 @@ public class Inventory : MonoBehaviour {
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CollectItem);
 	}
 
+	/// <summary>
+	/// Spend a key in the inventory.
+	/// </summary>
+	/// <param name="isRed">If true, remove a red key else remove a blue key.</param>
 	public void SpendKey(bool isRed) {
 		if (blueKeys > 0 && !isRed) {
 			blueKeys--;
@@ -85,6 +89,9 @@ public class Inventory : MonoBehaviour {
 		UIController.Instance.UpdateUI();
 	}
 
+	/// <summary>
+	/// Mark the bomb as used in the inventory and allow picking up another.
+	/// </summary>
 	public void UseBomb() {
 		hasBomb = false;
 		UIController.Instance.UpdateUI();
