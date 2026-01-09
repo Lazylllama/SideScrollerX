@@ -90,6 +90,17 @@ public class Inventory : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Reset the inventory to 0
+	/// </summary>
+	public void ResetInventory() {
+		blueKeys = 0;
+		redKeys  = 0;
+		goldKeys = 0;
+		coins    = 0;
+		hasBomb  = false;
+	}
+
+	/// <summary>
 	/// Mark the bomb as used in the inventory and allow picking up another.
 	/// </summary>
 	public void UseBomb() {

@@ -97,7 +97,9 @@ public class PlayerController : MonoBehaviour {
 
 	private void OnTriggerEnter2D(Collider2D other) {
 		if (!other.gameObject.CompareTag("PlayerDeathBorder")) return;
-		StatsController.Instance.DealDamage(3f, transform.position);
+		StatsController.Instance.DealDamage(1f, transform.position);
+		AudioManager.Instance.PlaySfx(AudioManager.AudioName.PlayerFallDie);
+		ResetPlayerPosition();
 	}
 
 	#endregion
@@ -122,9 +124,7 @@ public class PlayerController : MonoBehaviour {
 				break;
 		}
 
-		if (jumpAction.IsPressed()) {
-			PerformJump(jumpAction.WasPressedThisFrame());
-		}
+		if (jumpAction.IsPressed()) PerformJump();
 	}
 
 	private void PerformMove() {
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	// TODO(@lazylllama): Rework function to make it more optimized and simple
-	private void PerformJump(bool thisFrame) {
+	private void PerformJump() {
 		switch (isGrounded) {
 			case false when hasCoyoteJumped && jumpPowerTimer > 0f:
 				playerRigidbody.AddForce(Vector2.up * (jumpForce * Time.fixedDeltaTime * extraJumpForce),
@@ -252,6 +252,17 @@ public class PlayerController : MonoBehaviour {
 		hasCoyoteJumped    = false;
 		yield return new WaitForSeconds(coyoteTime);
 		isCoyoteTimeActive = false;
+	}
+
+	#endregion
+
+	#region Functions
+
+	/// <summary>
+	/// Sets the player to be back at Vector3.Zero
+	/// </summary>
+	public void ResetPlayerPosition() {
+		transform.position = Vector3.zero;
 	}
 
 	#endregion

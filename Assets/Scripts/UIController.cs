@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -14,9 +15,10 @@ public class UIController : MonoBehaviour {
 
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
-	[SerializeField] private GameObject uiKeys;
-	[SerializeField] private GameObject uiCoins;
-	[SerializeField] private GameObject uiBomb;
+	[SerializeField] private TextMeshProUGUI uiCoins;
+
+	[SerializeField] private GameObject      uiKeys;
+	[SerializeField] private GameObject      uiBomb;
 
 	[Header("Refs")]
 	[SerializeField] private Animator startMenuAnimator;
@@ -25,7 +27,6 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private Animator cmAnimator;
 
 	private InputAction     pauseAction;
-	private TextMeshProUGUI uiCoinsText;
 
 	//* States
 	public bool isPaused;
@@ -52,7 +53,6 @@ public class UIController : MonoBehaviour {
 		Cursor.visible = true;
 		
 		// Set Refs
-		uiCoinsText = uiCoins.GetComponentInChildren<TextMeshProUGUI>();
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
 		hudAnimator.SetBool(IsHudVisible, false);
@@ -88,13 +88,14 @@ public class UIController : MonoBehaviour {
 		var totalKeys = 0;
 
 		// Health
-		// For every UI heart, set fill to health minus index, fill can be over 1 without breaking
+		// For every UI heart, set fill to health minus index. fill can be over 1 without breaking
 		for (var i = 0; i < uiHearts.Count; i++) {
 			uiHearts[i].GetComponent<Image>().fillAmount = health - i;
 		}
 
 		// Inventory
-		uiCoinsText.text = Inventory.Instance.coins.ToString() + "x";
+		Debug.Log(Inventory.Instance.coins);
+		uiCoins.text = Inventory.Instance.coins + "x";
 		uiBomb.SetActive(Inventory.Instance.hasBomb);
 
 		// TODO(@lazylllama): Optimize and add animations for adding/removing keys (fly in/out of view), i just have no clue how yet without making it even more stupid
@@ -150,9 +151,12 @@ public class UIController : MonoBehaviour {
 		StartCoroutine(PauseRoutine(false));
 	}
 	
-	/// Restarts the current scene/level
-	public void RestartLevel() {
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+	/// Restarts the game
+	public void RestartGame() {
+		StartCoroutine(PauseRoutine(false));
+		PlayerController.Instance.ResetPlayerPosition();
+		StatsController.Instance.ResetGame();
+		SceneManager.LoadScene("Scenes/Level1");
 	}
 	
 	/// Plays a sound effect for clicking on UI elements
@@ -184,6 +188,10 @@ public class UIController : MonoBehaviour {
 		Time.timeScale = 0f;
 
 		cmAnimator.SetBool(IsZoomedOut, true);
+		
+		yield return new WaitForSeconds(1.5f);
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+		PlayerController.Instance.ResetPlayerPosition();
 	}
 
 	private IEnumerator StartLevelRoutine() {

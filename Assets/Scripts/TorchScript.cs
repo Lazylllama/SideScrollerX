@@ -50,6 +50,7 @@ public class TorchScript : MonoBehaviour {
 	/// </summary>
 	/// <param name="isLit">true = torch is lit</param>
 	public void SetIsLit(bool isLit) {
+		Debug.Log($"Torch is now {isLit}");
 		animator.SetBool(IsLit, isLit);
 	}
 

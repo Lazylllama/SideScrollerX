@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class StatsController : MonoBehaviour {
@@ -58,6 +57,19 @@ public class StatsController : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Reset everything back to default pretty much
+	/// </summary>
+	public void ResetGame() {
+		level  = 1;
+		health = 3;
+		levelPlaying = true;
+		
+		UIController.Instance.UpdateUI();
+		TorchScript.Instance.SetIsLit(true);
+		Inventory.Instance.ResetInventory();
+	}
+
+	/// <summary>
 	/// Deal damage to the player
 	/// </summary>
 	/// <param name="damageAmount">HP to remove</param>
@@ -75,9 +87,7 @@ public class StatsController : MonoBehaviour {
 
 		if (health <= 0) {
 			TorchScript.Instance.SetIsLit(false);
-			AudioManager.Instance.PlaySfx(sourcePosition.y < -10
-				                              ? AudioManager.AudioName.PlayerFallDie
-				                              : AudioManager.AudioName.PlayerDie);
+			if (sourcePosition.y > -10) AudioManager.Instance.PlaySfx(AudioManager.AudioName.PlayerDie);
 		} else {
 			// Apply immortality
 			PlayerController.Instance.PlayerImmortal(1.25f);
