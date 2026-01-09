@@ -29,7 +29,7 @@ TagManager:
   - Bomb
   - Lock
   - Torch
-  - 
+  - NoPlayerCollide
   - 
   - 
   - 
