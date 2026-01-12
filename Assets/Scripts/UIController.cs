@@ -157,6 +157,7 @@ public class UIController : MonoBehaviour {
 		PlayerController.Instance.ResetPlayerPosition();
 		StatsController.Instance.ResetGame();
 		SceneManager.LoadScene("Scenes/Level1");
+		UpdateUI();
 	}
 	
 	/// Plays a sound effect for clicking on UI elements
