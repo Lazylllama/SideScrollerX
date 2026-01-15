@@ -37,6 +37,9 @@ public class LevelDoor : MonoBehaviour {
 		yield return new WaitForSeconds(1f);
 		
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.OpenDoor);
+		
+		StatsController.Instance.StartNextLevel();
+		
 	}
 
 	#endregion

@@ -185,12 +185,12 @@ public class UIController : MonoBehaviour {
 	}
 
 	public IEnumerator NextLevel() {
-		yield return new WaitForSeconds(0.2f);
-		Time.timeScale = 0f;
+		yield return new WaitForSeconds(0.5f);
 
 		cmAnimator.SetBool(IsZoomedOut, true);
 		
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(1f);
+		
 		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 		PlayerController.Instance.ResetPlayerPosition();
 	}
