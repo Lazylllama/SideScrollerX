@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class StatsController : MonoBehaviour {
 	#region Fields
@@ -7,7 +9,7 @@ public class StatsController : MonoBehaviour {
 	public static StatsController Instance;
 
 	//* Stats
-	[SerializeField] private int  levelMax = 5;
+	[SerializeField] private int  levelMax = 3;
 	public                   bool levelPlaying;
 	public                   int  level;
 
@@ -50,23 +52,37 @@ public class StatsController : MonoBehaviour {
 	#region Functions
 
 	/// Go to the next level
-	public void StartNextLevel() {
+	public void LogNextLevel() {
+		Debug.Log("Next Level!");
 		if (level == levelMax) return;
-		levelPlaying =  true;
+		if (level == 0) levelPlaying =  true;
 		level        += 1;
 	}
+
+	/// <summary>
+	/// Set the level playing boolean (enables/disables movement)
+	/// </summary>
+	/// <param name="value"></param>
+	public void SetLevelPlaying(bool value) => levelPlaying = value;
+
+	/// <summary>
+	/// Check if the player is on the last level
+	/// </summary>
+	/// <returns>bool</returns>
+	public bool IsLastLevel() => level == levelMax;
 
 	/// <summary>
 	/// Reset everything back to default pretty much
 	/// </summary>
 	public void ResetGame() {
-		level  = 1;
-		health = 3;
+		level        = 1;
+		health       = 3;
 		levelPlaying = true;
-		
+
 		UIController.Instance.UpdateUI();
 		TorchScript.Instance.SetIsLit(true);
 		Inventory.Instance.ResetInventory();
+		SceneManager.LoadScene("Scenes/Level1");
 	}
 
 	/// <summary>
@@ -86,7 +102,7 @@ public class StatsController : MonoBehaviour {
 		PlayerController.Instance.DamageKnockback(sourcePosition, forceMult);
 
 		if (health <= 0) {
-			TorchScript.Instance.SetIsLit(false);
+			StartCoroutine(PlayerDieRoutine());
 			if (sourcePosition.y > -10) AudioManager.Instance.PlaySfx(AudioManager.AudioName.PlayerDie);
 		} else {
 			// Apply immortality
@@ -101,6 +117,16 @@ public class StatsController : MonoBehaviour {
 	/// Register immunity for 0.2 seconds after a kill
 	// To avoid bad problems with cramming or whatever might happen
 	public void RegisterKill() => PlayerController.Instance.PlayerImmortal(0.2f);
+
+	#endregion
+
+	#region Routines
+
+	private IEnumerator PlayerDieRoutine() {
+		TorchScript.Instance.SetIsLit(false);
+		yield return new WaitForSeconds(4f);
+		ResetGame();
+	}
 
 	#endregion
 }

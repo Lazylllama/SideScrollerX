@@ -16,6 +16,7 @@ TagManager:
   - JumpPad
   - BombPickup
   - PlayerDeathBorder
+  - BreakableBox
   layers:
   - Default
   - TransparentFX

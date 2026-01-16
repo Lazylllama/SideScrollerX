@@ -22,8 +22,14 @@ public class BreakableBox : MonoBehaviour {
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision) {
-		if (!(collision.relativeVelocity.magnitude >= fragility)) return;
+		if (collision.relativeVelocity.magnitude >= fragility) Die();
+	}
 
+	#endregion
+
+	#region Functions
+
+	public void Die() {
 		shards.SetActive(true);
 
 		spriteRenderer.enabled = false;

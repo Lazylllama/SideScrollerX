@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -16,7 +17,7 @@ public class UIController : MonoBehaviour {
 	[Header("UI Elements")]
 	[SerializeField] private List<GameObject> uiHearts;
 	[SerializeField] private TextMeshProUGUI uiCoins;
-
+	[SerializeField] private TextMeshProUGUI uiScore;
 	[SerializeField] private GameObject      uiKeys;
 	[SerializeField] private GameObject      uiBomb;
 
@@ -24,9 +25,10 @@ public class UIController : MonoBehaviour {
 	[SerializeField] private Animator startMenuAnimator;
 	[SerializeField] private Animator hudAnimator;
 	[SerializeField] private Animator pauseMenuAnimator;
+	[SerializeField] private Animator winScreenAnimator;
 	[SerializeField] private Animator cmAnimator;
 
-	private InputAction     pauseAction;
+	private InputAction pauseAction;
 
 	//* States
 	public bool isPaused;
@@ -42,6 +44,7 @@ public class UIController : MonoBehaviour {
 	private static readonly int IsZoomedOut        = Animator.StringToHash("isZoomedOut");
 	private static readonly int HasMenuOffset      = Animator.StringToHash("hasMenuOffset");
 	private static readonly int MenuFlyAway        = Animator.StringToHash("menuFlyAway");
+	private static readonly int HasWon             = Animator.StringToHash("hasWon");
 
 	#endregion
 
@@ -51,13 +54,14 @@ public class UIController : MonoBehaviour {
 		// Ensure time is normal and the cursor is visible at the start
 		Time.timeScale = 1f;
 		Cursor.visible = true;
-		
+
 		// Set Refs
 		pauseAction = InputSystem.actions.FindAction("Pause");
 
 		hudAnimator.SetBool(IsHudVisible, false);
 		pauseMenuAnimator.SetBool(IsPauseMenuVisible, false);
 		cmAnimator.SetBool(IsZoomedOut, false);
+		winScreenAnimator.SetBool(HasWon, false);
 
 		// Update the UI at the start
 		UpdateUI();
@@ -81,7 +85,7 @@ public class UIController : MonoBehaviour {
 	#endregion
 
 	#region Functions
-	
+
 	/// Refreshes the UI with the current stats
 	public void UpdateUI() {
 		var health    = StatsController.Instance.health;
@@ -94,8 +98,8 @@ public class UIController : MonoBehaviour {
 		}
 
 		// Inventory
-		Debug.Log(Inventory.Instance.coins);
 		uiCoins.text = Inventory.Instance.coins + "x";
+		uiScore.text = "SCORE: "                + Inventory.Instance.coins;
 		uiBomb.SetActive(Inventory.Instance.hasBomb);
 
 		// TODO(@lazylllama): Optimize and add animations for adding/removing keys (fly in/out of view), i just have no clue how yet without making it even more stupid
@@ -128,12 +132,12 @@ public class UIController : MonoBehaviour {
 			totalKeys++;
 		}
 	}
-	
+
 	/// Starts the level
 	public void StartLevel() {
 		StartCoroutine(StartLevelRoutine());
 	}
-	
+
 	/// Exits the game completely
 	public void ExitGame() {
 		Application.Quit();
@@ -145,12 +149,12 @@ public class UIController : MonoBehaviour {
 	public void ExitToMenu() {
 		cmAnimator.SetBool(IsZoomedOut, isPaused);
 	}
-	
+
 	/// Resumes the game from the paused state
 	public void ResumeGame() {
 		StartCoroutine(PauseRoutine(false));
 	}
-	
+
 	/// Restarts the game
 	public void RestartGame() {
 		StartCoroutine(PauseRoutine(false));
@@ -159,7 +163,7 @@ public class UIController : MonoBehaviour {
 		SceneManager.LoadScene("Scenes/Level1");
 		UpdateUI();
 	}
-	
+
 	/// Plays a sound effect for clicking on UI elements
 	public void ClickSound() {
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.CursorPress);
@@ -181,18 +185,40 @@ public class UIController : MonoBehaviour {
 		// Time no worky when paused
 		if (isPaused) yield return new WaitForSeconds(0.5f);
 
+		Cursor.visible = isPaused;
 		Time.timeScale = isPaused ? 0f : 1f;
 	}
 
 	public IEnumerator NextLevel() {
-		yield return new WaitForSeconds(0.5f);
+		// Stop Character Movement
+		StatsController.Instance.SetLevelPlaying(false);
 
+		// If its the last level do sum else
+		Debug.Log(StatsController.Instance.level);
+		if (StatsController.Instance.IsLastLevel()) {
+			hudAnimator.SetBool(IsHudVisible, false);
+			yield return new WaitForSeconds(2f);
+			winScreenAnimator.SetBool(HasWon, true);
+			Cursor.visible = true;
+			yield break;
+		}
+
+		// Log the next level
+		StatsController.Instance.LogNextLevel();
+
+		// Zoom out the camera
 		cmAnimator.SetBool(IsZoomedOut, true);
-		
-		yield return new WaitForSeconds(1f);
-		
-		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+
+		// Wait for the zoom out animation to finish to avoid snappy movement
+		yield return new WaitForSeconds(3f);
 		PlayerController.Instance.ResetPlayerPosition();
+		yield return new WaitForSeconds(2f);
+		cmAnimator.SetBool(IsZoomedOut, false);
+
+		// Allow character movement again and load the next level
+		// (must finish routine before loading a new scene)
+		StatsController.Instance.SetLevelPlaying(true);
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
 
 	private IEnumerator StartLevelRoutine() {
@@ -206,7 +232,7 @@ public class UIController : MonoBehaviour {
 
 		yield return new WaitForSeconds(1.5f);
 
-		StatsController.Instance.StartNextLevel();
+		StatsController.Instance.LogNextLevel();
 	}
 
 	#endregion

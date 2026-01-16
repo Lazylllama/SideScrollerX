@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 3783720075458393731}
   - component: {fileID: 4840967020140353601}
   - component: {fileID: 1384592039237628372}
+  - component: {fileID: 6364533033481814343}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -94,7 +95,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  groundCheckRadius: 0.1
+  groundCheckRadius: 0.3
   isFacingRight: 0
   bombPrefab: {fileID: 777657335223585492, guid: ab3c8838b65ceaa4eb95f1d10bb205f4, type: 3}
 --- !u!114 &3520213831106683525
@@ -253,6 +254,19 @@ MonoBehaviour:
     DissipationDistance: 100
     PropagationSpeed: 343
   DefaultVelocity: {x: 1, y: 0.5, z: 0}
+--- !u!114 &6364533033481814343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2190053760292635970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63ba8f306ca154fb3f8754a7b30620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeepOnLoad
+  id: player
 --- !u!1 &3205388297590172899
 GameObject:
   m_ObjectHideFlags: 0
@@ -487,7 +501,7 @@ MonoBehaviour:
     m_FlipX: 0
     m_FlipY: 0
     m_InitialTrim: 0
-  m_CastingOption: 1
+  m_CastingOption: 2
   m_PreviousTrimEdge: 0.06
   m_PreviousEdgeProcessing: 1
   m_PreviousShadowCastingSource: 2

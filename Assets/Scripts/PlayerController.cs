@@ -184,7 +184,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void ActionCheck() {
-		if (!secondaryInteractAction.WasPressedThisFrame() ||
+		if (!secondaryInteractAction.IsPressed() ||
 		    !Inventory.Instance.hasBomb                    ||
 		    StatsController.Instance.LevelPause) return;
 

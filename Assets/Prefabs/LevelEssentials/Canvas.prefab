@@ -2118,7 +2118,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UIController, Assembly-CSharp
-        m_MethodName: RestartLevel
+        m_MethodName: RestartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2438,6 +2438,7 @@ GameObject:
   - component: {fileID: 2899210115345206354}
   - component: {fileID: 7315857870059975812}
   - component: {fileID: 891406807588309057}
+  - component: {fileID: 8952171290964717346}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -2530,6 +2531,19 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &8952171290964717346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8121197644285117893}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63ba8f306ca154fb3f8754a7b30620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeepOnLoad
+  id: canvas
 --- !u!1 &8412721304787203445
 GameObject:
   m_ObjectHideFlags: 0

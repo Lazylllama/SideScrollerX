@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8033984028725894203}
   - component: {fileID: 6642219586365069441}
   - component: {fileID: 649445189425655914}
-  m_Layer: 12
+  m_Layer: 3
   m_Name: SpriteShard3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -190,9 +190,9 @@ GameObject:
   - component: {fileID: 4511597300092947755}
   - component: {fileID: 9196403570479599021}
   - component: {fileID: 4655909584042282932}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BreakableBox
-  m_TagString: Untagged
+  m_TagString: BreakableBox
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -205,7 +205,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859416688104040129}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 46.211, y: 9.246, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 8437756463935245541}
   - component: {fileID: 3115869450287024066}
   - component: {fileID: 1478714887414742986}
-  m_Layer: 12
+  m_Layer: 3
   m_Name: SpriteShard1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -490,7 +490,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3106272470836670277}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpriteShards
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -529,7 +529,7 @@ GameObject:
   - component: {fileID: 2209287972986985290}
   - component: {fileID: 1250059672712614715}
   - component: {fileID: 7881254658182456688}
-  m_Layer: 12
+  m_Layer: 3
   m_Name: SpriteShard2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -704,7 +704,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7232483144255623881}
   - component: {fileID: 9128992789792001136}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SpriteWhole
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -797,7 +797,7 @@ GameObject:
   - component: {fileID: 3611083471326840355}
   - component: {fileID: 49413124762227596}
   - component: {fileID: 9213684479640116593}
-  m_Layer: 12
+  m_Layer: 3
   m_Name: SpriteShard4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

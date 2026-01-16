@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4710173518449945257}
   - component: {fileID: 5695415871717953581}
   - component: {fileID: 7422969917310447076}
+  - component: {fileID: 1002359172435648194}
   m_Layer: 0
   m_Name: GameController
   m_TagString: Untagged
@@ -49,8 +50,8 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  uiKeys: {fileID: 0}
   uiCoins: {fileID: 0}
+  uiKeys: {fileID: 0}
   uiBomb: {fileID: 0}
   startMenuAnimator: {fileID: 0}
   hudAnimator: {fileID: 0}
@@ -76,3 +77,16 @@ MonoBehaviour:
   levelPlaying: 0
   level: 0
   health: 0
+--- !u!114 &1002359172435648194
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6485778843834062182}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63ba8f306ca154fb3f8754a7b30620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeepOnLoad
+  id: gameController

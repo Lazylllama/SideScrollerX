@@ -40,6 +40,7 @@ public class Inventory : MonoBehaviour {
 					StartCoroutine(CoinCollectRoutine(1, collision.gameObject));
 					break;
 				case "BombPickup":
+					if (hasBomb) return;
 					BombCollect();
 					Destroy(collision.gameObject);
 					break;
@@ -87,6 +88,12 @@ public class Inventory : MonoBehaviour {
 
 		AudioManager.Instance.PlaySfx(AudioManager.AudioName.UseKey);
 		UIController.Instance.UpdateUI();
+	}
+
+	public bool ConsumeLevelKey() {
+		if (goldKeys < 0) return false;
+		--goldKeys;
+		return true;
 	}
 
 	/// <summary>

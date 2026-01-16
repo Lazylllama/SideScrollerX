@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 6365821038709114566}
   - component: {fileID: 148438776755940493}
   - component: {fileID: 637921364462845170}
+  - component: {fileID: 7892726928500385274}
   m_Layer: 5
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -266,3 +267,16 @@ MonoBehaviour:
     FrequencyGain: 1
     Duration: 1
     m_NoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!114 &7892726928500385274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2034959401177670005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63ba8f306ca154fb3f8754a7b30620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeepOnLoad
+  id: mainCamera

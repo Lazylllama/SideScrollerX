@@ -1236,6 +1236,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9080469794539149241}
+  - component: {fileID: 274374151427453051}
   m_Layer: 0
   m_Name: Parallax
   m_TagString: Untagged
@@ -1262,6 +1263,19 @@ Transform:
   - {fileID: 5941425443368739837}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &274374151427453051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7080130932486320687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f63ba8f306ca154fb3f8754a7b30620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeepOnLoad
+  id: parallax
 --- !u!1 &7590446041585558346
 GameObject:
   m_ObjectHideFlags: 0
