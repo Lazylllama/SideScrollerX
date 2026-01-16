@@ -142,13 +142,7 @@ public class UIController : MonoBehaviour {
 	public void ExitGame() {
 		Application.Quit();
 	}
-
-
-	//* Pause Menu Functions
-	/// Exits to the main menu
-	public void ExitToMenu() {
-		cmAnimator.SetBool(IsZoomedOut, isPaused);
-	}
+	
 
 	/// Resumes the game from the paused state
 	public void ResumeGame() {
